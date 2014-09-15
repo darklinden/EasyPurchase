@@ -9,7 +9,7 @@
 #import "EPProductInfo.h"
 #import "ObjHolder.h"
 
-@interface EPProductInfo () {
+@interface EPProductInfo () <SKProductsRequestDelegate> {
     EPProductInfoCompletionHandle _completionHandle;
 }
 @property (nonatomic, strong) NSString              *ticket;
@@ -25,7 +25,7 @@
 {
     EPProductInfo *pEPProductInfo = [[EPProductInfo alloc] init];
     pEPProductInfo.ticket = [[ObjHolder sharedHolder] pushObject:pEPProductInfo];
-    pEPProductInfo.requestProductIds = requestProductIds;
+    pEPProductInfo.requestProductIds = productIds;
     pEPProductInfo->_completionHandle = completionHandle;
     [pEPProductInfo start];
 }
@@ -51,7 +51,7 @@
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (_completionHandle) {
-            _completionHandle([self.responseProducts copy])
+            _completionHandle([self.responseProducts copy]);
         }
         
         [[ObjHolder sharedHolder] popObjectWithTicket:_ticket];

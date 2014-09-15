@@ -145,7 +145,7 @@
         for (int i = 0; i < intKeyCount; i++) {
             NSString *pStr_key = [NSString stringWithFormat:IAP_SECURE_VALUE_KEY_FORMAT, i];
             NSString *pStr_product = [self getSecureValueForKey:pStr_key];
-            if ([product_id isEqualToString:pStr_product]) {
+            if ([productId isEqualToString:pStr_product]) {
                 isSubscribed = YES;
                 break;
             }

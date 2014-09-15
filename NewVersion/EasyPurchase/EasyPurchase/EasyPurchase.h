@@ -23,10 +23,10 @@
 #define IAP_SECURE_VALUE_COUNT_KEY          @"IAP_SECURE_VALUE_COUNT_KEY"
 #define IAP_SECURE_VALUE_KEY_FORMAT         @"IAP_SECURE_VALUE_KEY_%d"
 
-#define IAP_OBSERVER_LOG( s, ... )          while (DEBUG) { NSLog( s, ... ); }
-#define IAP_PRODUCT_LOG( s, ... )           while (DEBUG) { NSLog( s, ... ); }
-#define IAP_CHECK_LOG( s, ... )             while (DEBUG) { NSLog( s, ... ); }
-#define IAP_CONTROLLER_LOG( s, ... )        while (DEBUG) { NSLog( s, ... ); }
+#define IAP_OBSERVER_LOG( s, ... )          NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+#define IAP_PRODUCT_LOG( s, ... )           NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+#define IAP_CHECK_LOG( s, ... )             NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+#define IAP_CONTROLLER_LOG( s, ... )        NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
 
 // user cancelled the request, etc.
 #define IAP_LOCALSTR_SKErrorPaymentCancelled            @"IAP_LOCALSTR_SKErrorPaymentCancelled"

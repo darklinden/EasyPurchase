@@ -9,10 +9,15 @@
 #import "EPPurchaseObserver.h"
 #import "ObjHolder.h"
 
-NS_ENUM(u_int64_t, EPPurchaseType) {
+//NS_ENUM(u_int64_t, EPPurchaseType) {
+//    EPPurchaseTypePurchase,
+//    EPPurchaseTypeRestore
+//};
+
+typedef enum : NSUInteger {
     EPPurchaseTypePurchase,
     EPPurchaseTypeRestore
-};
+} EPPurchaseType;
 
 @interface EPPurchaseObserver () <SKPaymentTransactionObserver>{
     EPPurchaseCompletionHandle  _purchaseCompletionHandle;
@@ -72,7 +77,7 @@ NS_ENUM(u_int64_t, EPPurchaseType) {
 {
     if ([self hasDeadLock]) {
         if (completionHandle) {
-            completionHandle(product.productIdentifier, IAP_LOCALSTR_InAppPurchaseDeadLock);
+            completionHandle(nil, IAP_LOCALSTR_InAppPurchaseDeadLock);
         }
     }
     else {

@@ -36,7 +36,7 @@ __strong static ObjHolder *_holder = nil;
     
 	theString = CFUUIDCreateString(NULL, theUUID);
     
-	NSString *uuid = [NSString stringWithString:(id)theString];
+	NSString *uuid = [NSString stringWithString:(__bridge id)theString];
     
 	CFRelease(theString); CFRelease(theUUID); // Cleanup
     

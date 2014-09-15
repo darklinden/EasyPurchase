@@ -30,7 +30,7 @@
 
 @implementation EPReceiptChecker
 
-+ (id)checkReceiptWithCompletion:(EPReceiptCheckerCompletionHandle)completionHandle
++ (void)checkReceiptWithCompletion:(EPReceiptCheckerCompletionHandle)completionHandle
 {
     EPReceiptChecker *checker = [[EPReceiptChecker alloc] init];
     checker.ticket = [[ObjHolder sharedHolder] pushObject:checker];
@@ -98,7 +98,7 @@
         [self sendrequest];
     }
     else {
-        [self checkRequestFinishWithError:IAP_LOCALSTR_CheckReceiptFailed]
+        [self checkRequestFinishWithError:IAP_LOCALSTR_CheckReceiptFailed];
     }
 }
 
@@ -169,13 +169,13 @@
                     
                     NSDictionary *receipt = [result objectForKey:@"receipt"];
                     if (receipt && [receipt isKindOfClass:[NSDictionary class]]) {
-                        IAP_CHECK_LOG(@"bid ------------------------> %@",[receipt objectForKey:@"bid"]);
-                        IAP_CHECK_LOG(@"product_id -----------------> %@",[receipt objectForKey:@"product_id"]);
-                        IAP_CHECK_LOG(@"purchase_date --------------> %@",[receipt objectForKey:@"purchase_date"]);
-                        IAP_CHECK_LOG(@"quantity -------------------> %@",[receipt objectForKey:@"quantity"]);
-                        IAP_CHECK_LOG(@"original_purchase_date -----> %@",[receipt objectForKey:@"original_purchase_date"]);
-                        IAP_CHECK_LOG(@"transaction_id -------------> %@",[receipt objectForKey:@"transaction_id"]);
-                        IAP_CHECK_LOG(@"original_transaction_id ----> %@",[receipt objectForKey:@"original_transaction_id"]);
+                        IAP_CHECK_LOG(@"bid ------------------------> %@", [receipt objectForKey:@"bid"]);
+                        IAP_CHECK_LOG(@"product_id -----------------> %@", [receipt objectForKey:@"product_id"]);
+                        IAP_CHECK_LOG(@"purchase_date --------------> %@", [receipt objectForKey:@"purchase_date"]);
+                        IAP_CHECK_LOG(@"quantity -------------------> %@", [receipt objectForKey:@"quantity"]);
+                        IAP_CHECK_LOG(@"original_purchase_date -----> %@", [receipt objectForKey:@"original_purchase_date"]);
+                        IAP_CHECK_LOG(@"transaction_id -------------> %@", [receipt objectForKey:@"transaction_id"]);
+                        IAP_CHECK_LOG(@"original_transaction_id ----> %@", [receipt objectForKey:@"original_transaction_id"]);
                         
                         if ([receipt objectForKey:@"product_id"] && [receipt objectForKey:@"transaction_id"]) {
                             NSDictionary *dict_tmp = @{@"product_id": [receipt objectForKey:@"product_id"],

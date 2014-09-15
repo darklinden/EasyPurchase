@@ -12,6 +12,6 @@ typedef void(^EPReceiptCheckerCompletionHandle)(NSArray *passedProducts, NSStrin
 
 @interface EPReceiptChecker : NSObject
 
-+ (id)checkReceiptWithCompletion:(EPReceiptCheckerCompletionHandle)completionHandle;
++ (void)checkReceiptWithCompletion:(EPReceiptCheckerCompletionHandle)completionHandle;
 
 @end

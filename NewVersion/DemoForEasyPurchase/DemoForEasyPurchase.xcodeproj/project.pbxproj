@@ -24,6 +24,7 @@
 		1C1BC37F19C68951008FB16F /* VC_selectProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1BC37919C68951008FB16F /* VC_selectProduct.m */; };
 		1C1BC38019C68951008FB16F /* VC_selectProduct.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C1BC37A19C68951008FB16F /* VC_selectProduct.xib */; };
 		1C1BC38119C68951008FB16F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1BC37C19C68951008FB16F /* ViewController.m */; };
+		1C1BC3EA19C6F440008FB16F /* libEasyPurchase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C1BC3DD19C6BA50008FB16F /* libEasyPurchase.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = 1C1BC39B19C68A13008FB16F;
 			remoteInfo = EasyPurchaseTests;
+		};
+		1C1BC3EB19C6F452008FB16F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1C1BC3D719C6BA50008FB16F /* EasyPurchase.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1C1BC38A19C68A13008FB16F;
+			remoteInfo = EasyPurchase;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -84,6 +92,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C1BC3EA19C6F440008FB16F /* libEasyPurchase.a in Frameworks */,
 				1C1BC33519C688EE008FB16F /* CoreGraphics.framework in Frameworks */,
 				1C1BC33719C688EE008FB16F /* UIKit.framework in Frameworks */,
 				1C1BC33319C688EE008FB16F /* Foundation.framework in Frameworks */,
@@ -222,6 +231,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				1C1BC3EC19C6F452008FB16F /* PBXTargetDependency */,
 			);
 			name = DemoForEasyPurchase;
 			productName = DemoForEasyPurchase;
@@ -352,6 +362,11 @@
 			isa = PBXTargetDependency;
 			target = 1C1BC32E19C688EE008FB16F /* DemoForEasyPurchase */;
 			targetProxy = 1C1BC35519C688EE008FB16F /* PBXContainerItemProxy */;
+		};
+		1C1BC3EC19C6F452008FB16F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = EasyPurchase;
+			targetProxy = 1C1BC3EB19C6F452008FB16F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

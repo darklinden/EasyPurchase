@@ -57,15 +57,6 @@
 		1C1BC3A619C68A13008FB16F /* EasyPurchaseTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "EasyPurchaseTests-Info.plist"; sourceTree = "<group>"; };
 		1C1BC3A819C68A13008FB16F /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1C1BC3AA19C68A13008FB16F /* EasyPurchaseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EasyPurchaseTests.m; sourceTree = "<group>"; };
-		1C1BC3C319C68A96008FB16F /* C_IapCheck.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C_IapCheck.h; sourceTree = "<group>"; };
-		1C1BC3C419C68A96008FB16F /* C_IapCheck.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = C_IapCheck.m; sourceTree = "<group>"; };
-		1C1BC3C519C68A96008FB16F /* C_IapConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C_IapConstants.h; sourceTree = "<group>"; };
-		1C1BC3C619C68A96008FB16F /* C_IapObserver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C_IapObserver.h; sourceTree = "<group>"; };
-		1C1BC3C719C68A96008FB16F /* C_IapObserver.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = C_IapObserver.m; sourceTree = "<group>"; };
-		1C1BC3C819C68A96008FB16F /* C_IapProduct.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C_IapProduct.h; sourceTree = "<group>"; };
-		1C1BC3C919C68A96008FB16F /* C_IapProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = C_IapProduct.m; sourceTree = "<group>"; };
-		1C1BC3CA19C68A96008FB16F /* C_IapPurchaseController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = C_IapPurchaseController.h; sourceTree = "<group>"; };
-		1C1BC3CB19C68A96008FB16F /* C_IapPurchaseController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = C_IapPurchaseController.m; sourceTree = "<group>"; };
 		1C1BC3D019C68E48008FB16F /* EPReceiptChecker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EPReceiptChecker.h; sourceTree = "<group>"; };
 		1C1BC3D119C68E48008FB16F /* EPReceiptChecker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EPReceiptChecker.m; sourceTree = "<group>"; };
 		1C1BC3E119C6BF4C008FB16F /* EPProductInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EPProductInfo.h; sourceTree = "<group>"; };
@@ -102,7 +93,6 @@
 		1C1BC38219C68A13008FB16F = {
 			isa = PBXGroup;
 			children = (
-				1C1BC3C219C68A96008FB16F /* PurchaseController */,
 				1C1BC39019C68A13008FB16F /* EasyPurchase */,
 				1C1BC3A419C68A13008FB16F /* EasyPurchaseTests */,
 				1C1BC38D19C68A13008FB16F /* Frameworks */,
@@ -171,22 +161,6 @@
 				1C1BC3A719C68A13008FB16F /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		1C1BC3C219C68A96008FB16F /* PurchaseController */ = {
-			isa = PBXGroup;
-			children = (
-				1C1BC3C319C68A96008FB16F /* C_IapCheck.h */,
-				1C1BC3C419C68A96008FB16F /* C_IapCheck.m */,
-				1C1BC3C519C68A96008FB16F /* C_IapConstants.h */,
-				1C1BC3C619C68A96008FB16F /* C_IapObserver.h */,
-				1C1BC3C719C68A96008FB16F /* C_IapObserver.m */,
-				1C1BC3C819C68A96008FB16F /* C_IapProduct.h */,
-				1C1BC3C919C68A96008FB16F /* C_IapProduct.m */,
-				1C1BC3CA19C68A96008FB16F /* C_IapPurchaseController.h */,
-				1C1BC3CB19C68A96008FB16F /* C_IapPurchaseController.m */,
-			);
-			path = PurchaseController;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
