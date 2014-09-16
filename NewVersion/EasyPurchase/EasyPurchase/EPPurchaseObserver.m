@@ -104,7 +104,7 @@ typedef enum : NSUInteger {
 {
     if (transaction.transactionState == SKPaymentTransactionStatePurchased
         || transaction.transactionState == SKPaymentTransactionStateRestored) {
-        IAP_OBSERVER_LOG(@"transaction type:%d transaction id: %@, original transaction id: %@", transaction.transactionState, transaction.transactionIdentifier, transaction.originalTransaction.transactionIdentifier);    
+        IAP_OBSERVER_LOG(@"transaction id: %@, original transaction id: %@", transaction.transactionIdentifier, transaction.originalTransaction.transactionIdentifier);    
     }
     
     switch (_type) {

@@ -9,8 +9,13 @@
 #import <UIKit/UIKit.h>
 #import "EasyPurchase.h"
 
+typedef enum : NSUInteger {
+    SKProductPaymentTypeNonConsumable,
+    SKProductPaymentTypeConsumable
+} SKProductPaymentType;
+
 @protocol VC_selectProductDelegate <NSObject>
-- (void)didSelectProduct:(SKProduct *)product;
+- (void)didSelectProduct:(SKProduct *)product type:(SKProductPaymentType)type;
 @end
 
 @interface VC_selectProduct : UIViewController <UITableViewDataSource, UITableViewDelegate>

@@ -61,8 +61,7 @@
 // Sent immediately before -requestDidFinish:
 - (void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
 {
-	int count = [response.products count];
-	if (count > 0) {
+	if (response.products.count > 0) {
 		self.responseProducts = response.products;
 	}
     [request cancel];

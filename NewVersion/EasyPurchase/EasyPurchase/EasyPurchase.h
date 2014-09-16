@@ -21,7 +21,7 @@
 #define IAP_RECEIPT_TIMEOUT                 10.f
 
 #define IAP_SECURE_VALUE_COUNT_KEY          @"IAP_SECURE_VALUE_COUNT_KEY"
-#define IAP_SECURE_VALUE_KEY_FORMAT         @"IAP_SECURE_VALUE_KEY_%d"
+#define IAP_SECURE_VALUE_KEY_FORMAT         @"IAP_SECURE_VALUE_KEY_%lld"
 
 #if 1
 #define IAP_OBSERVER_LOG( s, ... )          NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
@@ -74,25 +74,38 @@ typedef void(^EPPurchaseCompletionHandle)(NSString *productId, NSString *transac
 
 typedef void(^EPRestoreCompletionHandle)(NSArray *restoredProducts, NSString *errMsg);
 
+typedef void(^EPConsumableReceiptCheckerCompletionHandle)(NSString *productId, NSString *transactionId, NSString *errMsg);
+
 @interface EasyPurchase : NSObject
 
-//for Non-Consumable
-+ (BOOL)isPurchased:(NSString *)productId;
-+ (void)savePurchase:(NSString *)productId;
+#pragma mark - product info
 
 //request products informations
 + (void)requestProductsByIds:(NSArray *)productIds completion:(EPProductInfoCompletionHandle)completionHandle;
 
-//Purchase Observer should be Singleton, so you should not call more than one purchase/restore function at the same time
+#pragma mark - Non-Consumable
+
+//keychain save/load purchase state
++ (BOOL)isPurchased:(NSString *)productId;
++ (void)savePurchase:(NSString *)productId;
+
+/*
+ * warning: Purchase Observer should be Singleton, 
+ *          so you should not call more than one purchase/restore function at the same time
+ */
 
 //single purchase
-+ (void)purchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle;
-
-//single purchase
-+ (void)purchaseProductById:(NSString *)productId completion:(EPPurchaseCompletionHandle)completionHandle;
++ (void)nonConsumablePurchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle;
++ (void)nonConsumablePurchaseProductById:(NSString *)productId completion:(EPPurchaseCompletionHandle)completionHandle;
 
 //restore
 + (void)restorePurchaseWithCompletion:(EPRestoreCompletionHandle)completionHandle;
+
+#pragma mark - Consumable
+//single purchase
++ (void)consumablePurchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle;
++ (void)consumablePurchaseProductById:(NSString *)productId completion:(EPPurchaseCompletionHandle)completionHandle;
++ (void)checkReceiptForProduct:(NSString *)productId transaction:(NSString *)transactionId completion:(EPConsumableReceiptCheckerCompletionHandle)completionHandle;
 
 @end
 

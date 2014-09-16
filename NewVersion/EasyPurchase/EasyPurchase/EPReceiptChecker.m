@@ -157,7 +157,7 @@
                                                   error:nil];
     
     if (!result) {
-        [self checkRequestFinishWithError:IAP_LOCALSTR_CheckReceiptFailed];
+        [self checkRequestFinishWithError:IAP_LOCALSTR_CheckReceiptNetWorkFailed];
     }
     else {
         if ([result isKindOfClass:[NSDictionary class]]) {
@@ -198,8 +198,8 @@
                     [self sendrequest];
                 }
                 else {
-                    NSString *pStr_msg = [NSString stringWithFormat:@"err:purchase failed reason:error code %@", status] ;
-                    [self checkRequestFinishWithError:pStr_msg];
+                    IAP_CHECK_LOG(@"err: purchase failed reason: error code %@", status);
+                    [self checkRequestFinishWithError:IAP_LOCALSTR_CheckReceiptFailed];
                 }
             }
             else if ([self.checkingUrl isEqualToString:IAP_SANDBOX_URL]) {
@@ -232,7 +232,7 @@
                     [self checkRequestFinishWithError:nil];
                 }
                 else {
-                    IAP_CHECK_LOG(@"err:purchase failed reason:error code %@", status);
+                    IAP_CHECK_LOG(@"err: purchase failed reason: error code %@", status);
                     [self checkRequestFinishWithError:IAP_LOCALSTR_CheckReceiptFailed];
                 }
             }
