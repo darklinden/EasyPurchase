@@ -14,7 +14,7 @@
     EPReceiptCheckerCompletionHandle _completionHandle;
 }
 @property (nonatomic, strong) NSString                  *ticket;
-@property (strong, nonatomic) NSArray                   *passedProducts;
+@property (strong, nonatomic) NSMutableArray            *passedProducts;
 @property (strong, nonatomic) NSString                  *checkingUrl;
 @property (strong, nonatomic) NSString                  *receiptString;
 @property (strong, nonatomic) NSMutableData             *dataRecv;
@@ -94,6 +94,8 @@
         }
     }
     
+    self.passedProducts = [NSMutableArray array];
+    
     if (_receiptString) {
         [self sendrequest];
     }
@@ -165,37 +167,29 @@
                 
                 if ([status isEqualToString:IAP_SUBSCRIBE_SUCCESS]) {
                     
-                    NSMutableArray *array_tmp_product = [NSMutableArray array];
-                    
                     NSDictionary *receipt = [result objectForKey:@"receipt"];
                     if (receipt && [receipt isKindOfClass:[NSDictionary class]]) {
-                        IAP_CHECK_LOG(@"bid ------------------------> %@", [receipt objectForKey:@"bid"]);
-                        IAP_CHECK_LOG(@"product_id -----------------> %@", [receipt objectForKey:@"product_id"]);
-                        IAP_CHECK_LOG(@"purchase_date --------------> %@", [receipt objectForKey:@"purchase_date"]);
-                        IAP_CHECK_LOG(@"quantity -------------------> %@", [receipt objectForKey:@"quantity"]);
-                        IAP_CHECK_LOG(@"original_purchase_date -----> %@", [receipt objectForKey:@"original_purchase_date"]);
-                        IAP_CHECK_LOG(@"transaction_id -------------> %@", [receipt objectForKey:@"transaction_id"]);
-                        IAP_CHECK_LOG(@"original_transaction_id ----> %@", [receipt objectForKey:@"original_transaction_id"]);
-                        
-                        if ([receipt objectForKey:@"product_id"] && [receipt objectForKey:@"transaction_id"]) {
-                            NSDictionary *dict_tmp = @{@"product_id": [receipt objectForKey:@"product_id"],
-                                                       @"transaction_id": [receipt objectForKey:@"transaction_id"]};
-                            [array_tmp_product addObject:dict_tmp];
-                        }
                         
                         if ([receipt objectForKey:@"in_app"]) {
                             NSArray *array_in_app = [receipt objectForKey:@"in_app"];
                             for (NSDictionary *dict in array_in_app) {
+                                IAP_CHECK_LOG(@"bid ------------------------> %@",[dict objectForKey:@"bid"]);
+                                IAP_CHECK_LOG(@"product_id -----------------> %@",[dict objectForKey:@"product_id"]);
+                                IAP_CHECK_LOG(@"purchase_date --------------> %@",[dict objectForKey:@"purchase_date"]);
+                                IAP_CHECK_LOG(@"quantity -------------------> %@",[dict objectForKey:@"quantity"]);
+                                IAP_CHECK_LOG(@"original_purchase_date -----> %@",[dict objectForKey:@"original_purchase_date"]);
+                                IAP_CHECK_LOG(@"transaction_id -------------> %@",[dict objectForKey:@"transaction_id"]);
+                                IAP_CHECK_LOG(@"original_transaction_id ----> %@",[dict objectForKey:@"original_transaction_id"]);
+                                
                                 if ([dict objectForKey:@"product_id"] && [dict objectForKey:@"transaction_id"]) {
                                     NSDictionary *dict_tmp = @{@"product_id": [dict objectForKey:@"product_id"],
                                                                @"transaction_id": [dict objectForKey:@"transaction_id"]};
-                                    [array_tmp_product addObject:dict_tmp];
+                                    [_passedProducts addObject:dict_tmp];
                                 }
                             }
                         }
                     }
                     
-                    self.passedProducts = array_tmp_product;
                     [self checkRequestFinishWithError:nil];
                 }
                 else if ([status isEqualToString:IAP_SUBSCRIBE_FAILED_SANDBOX]) {
@@ -212,37 +206,29 @@
                 
                 if ([status isEqualToString:IAP_SUBSCRIBE_SUCCESS]) {
                     
-                    NSMutableArray *array_tmp_product = [NSMutableArray array];
-                    
                     NSDictionary *receipt = [result objectForKey:@"receipt"];
                     if (receipt && [receipt isKindOfClass:[NSDictionary class]]) {
-                        IAP_CHECK_LOG(@"bid ------------------------> %@",[receipt objectForKey:@"bid"]);
-                        IAP_CHECK_LOG(@"product_id -----------------> %@",[receipt objectForKey:@"product_id"]);
-                        IAP_CHECK_LOG(@"purchase_date --------------> %@",[receipt objectForKey:@"purchase_date"]);
-                        IAP_CHECK_LOG(@"quantity -------------------> %@",[receipt objectForKey:@"quantity"]);
-                        IAP_CHECK_LOG(@"original_purchase_date -----> %@",[receipt objectForKey:@"original_purchase_date"]);
-                        IAP_CHECK_LOG(@"transaction_id -------------> %@",[receipt objectForKey:@"transaction_id"]);
-                        IAP_CHECK_LOG(@"original_transaction_id ----> %@",[receipt objectForKey:@"original_transaction_id"]);
-                        
-                        if ([receipt objectForKey:@"product_id"] && [receipt objectForKey:@"transaction_id"]) {
-                            NSDictionary *dict_tmp = @{@"product_id": [receipt objectForKey:@"product_id"],
-                                                       @"transaction_id": [receipt objectForKey:@"transaction_id"]};
-                            [array_tmp_product addObject:dict_tmp];
-                        }
                         
                         if ([receipt objectForKey:@"in_app"]) {
                             NSArray *array_in_app = [receipt objectForKey:@"in_app"];
                             for (NSDictionary *dict in array_in_app) {
+                                IAP_CHECK_LOG(@"bid ------------------------> %@",[dict objectForKey:@"bid"]);
+                                IAP_CHECK_LOG(@"product_id -----------------> %@",[dict objectForKey:@"product_id"]);
+                                IAP_CHECK_LOG(@"purchase_date --------------> %@",[dict objectForKey:@"purchase_date"]);
+                                IAP_CHECK_LOG(@"quantity -------------------> %@",[dict objectForKey:@"quantity"]);
+                                IAP_CHECK_LOG(@"original_purchase_date -----> %@",[dict objectForKey:@"original_purchase_date"]);
+                                IAP_CHECK_LOG(@"transaction_id -------------> %@",[dict objectForKey:@"transaction_id"]);
+                                IAP_CHECK_LOG(@"original_transaction_id ----> %@",[dict objectForKey:@"original_transaction_id"]);
+                                
                                 if ([dict objectForKey:@"product_id"] && [dict objectForKey:@"transaction_id"]) {
                                     NSDictionary *dict_tmp = @{@"product_id": [dict objectForKey:@"product_id"],
                                                                @"transaction_id": [dict objectForKey:@"transaction_id"]};
-                                    [array_tmp_product addObject:dict_tmp];
+                                    [_passedProducts addObject:dict_tmp];
                                 }
                             }
                         }
                     }
                     
-                    self.passedProducts = array_tmp_product;
                     [self checkRequestFinishWithError:nil];
                 }
                 else {

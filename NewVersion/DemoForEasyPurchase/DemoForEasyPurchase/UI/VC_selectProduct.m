@@ -10,12 +10,14 @@
 #import "EasyPurchase.h"
 
 @interface VC_selectProduct ()
+@property (assign, nonatomic) BOOL                  once;
+
 @property (strong, nonatomic) IBOutlet UITableView  *pVtable_products;
 @property (strong, nonatomic) UIView                *pV_loading;
 @property (strong, nonatomic) NSArray               *pArr_id;
 @property (strong, nonatomic) NSArray               *pArr_data;
-@property (strong, nonatomic) NSDictionary          *pDict_title;
-@property (strong, nonatomic) NSDictionary          *pDict_price;
+@property (strong, nonatomic) NSMutableDictionary   *pDict_title;
+@property (strong, nonatomic) NSMutableDictionary   *pDict_price;
 @end
 
 @implementation VC_selectProduct
@@ -41,27 +43,9 @@
     }
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        // Custom initialization
-    }
-    return self;
-}
-
 - (void)pBtn_closeClick:(id)sender
 {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0
     [self dismissViewControllerAnimated:YES completion:nil];
-#else
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.f) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-    else {
-        [self dismissModalViewControllerAnimated:YES];
-    }
-#endif
 }
 
 - (void)viewDidLoad
@@ -71,36 +55,42 @@
     UIBarButtonItem *pBtn_close = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(pBtn_closeClick:)];
     self.navigationItem.rightBarButtonItem = pBtn_close;
     
-    // Do any additional setup after loading the view from its nib.
-    
-    //contact manager
-//    self.pArr_id = @[@"RemoveAds_20130922"];
-    
-    //izip
-    self.pArr_id = @[@"2012073111",
-                     @"2013052101",
-                     @"2013052102"];
-    
-    //power reader
-//    self.pArr_id = @[@"PowerReader_20130415",
-//                     @"PowerReader_Box_20130904",
-//                     @"PowerReader_Dropbox_20130905",
-//                     @"PowerReader_GoogleDrive_20130905"];
+    _once = NO;
     
     [self showLoading];
-#warning
-//    [[C_IapPurchaseController mainIapPurchaseController] setDelegate:self];
-//    [C_IapPurchaseController requestProductsByIds:self.pArr_id];
 }
 
-#pragma mark - for get product
-- (void)responseProducts:(NSArray *)products pricesByIDs:(NSDictionary *)prices titlesByIDs:(NSDictionary *)titles
+- (void)viewDidAppear:(BOOL)animated
 {
-    [self removeLoading];
-    self.pArr_data = products;
-    self.pDict_price = prices;
-    self.pDict_title = titles;
-    [self.pVtable_products reloadData];
+    [super viewDidAppear:animated];
+    
+    if (!_once) {
+        _once = YES;
+        
+        self.pArr_id = @[@"darklinden.purchasetest.featureone",
+                         @"darklinden.purchasetest.featuretwo",
+                         @"darklinden.purchasetest.goldcoin"];
+        [EasyPurchase requestProductsByIds:_pArr_id completion:^(NSArray *responseProducts) {
+            [self removeLoading];
+            self.pArr_data = responseProducts;
+            
+            self.pDict_price = [NSMutableDictionary dictionary];
+            self.pDict_title = [NSMutableDictionary dictionary];
+            for (SKProduct *p in responseProducts) {
+                
+                NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+                [numberFormatter setFormatterBehavior:NSNumberFormatterBehaviorDefault];
+                [numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+                [numberFormatter setLocale:p.priceLocale];
+                NSString *formattedString = [numberFormatter stringFromNumber:p.price];
+                
+                [_pDict_price setObject:formattedString forKey:p.productIdentifier];
+                [_pDict_title setObject:p.localizedTitle forKey:p.productIdentifier];
+            }
+            
+            [self.pVtable_products reloadData];
+        }];
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

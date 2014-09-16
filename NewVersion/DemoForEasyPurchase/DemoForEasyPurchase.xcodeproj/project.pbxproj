@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C1633B419C7C9B200D15CE8 /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C1633B319C7C9B200D15CE8 /* ViewController.xib */; };
 		1C1BC33319C688EE008FB16F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C1BC33219C688EE008FB16F /* Foundation.framework */; };
 		1C1BC33519C688EE008FB16F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C1BC33419C688EE008FB16F /* CoreGraphics.framework */; };
 		1C1BC33719C688EE008FB16F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C1BC33619C688EE008FB16F /* UIKit.framework */; };
@@ -59,6 +60,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		1C1633B319C7C9B200D15CE8 /* ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ViewController.xib; sourceTree = "<group>"; };
 		1C1BC32F19C688EE008FB16F /* DemoForEasyPurchase.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DemoForEasyPurchase.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C1BC33219C688EE008FB16F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1C1BC33419C688EE008FB16F /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -195,6 +197,7 @@
 				1C1BC37A19C68951008FB16F /* VC_selectProduct.xib */,
 				1C1BC37B19C68951008FB16F /* ViewController.h */,
 				1C1BC37C19C68951008FB16F /* ViewController.m */,
+				1C1633B319C7C9B200D15CE8 /* ViewController.xib */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -220,9 +223,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1C1BC32E19C688EE008FB16F /* DemoForEasyPurchase */ = {
+		1C1BC32E19C688EE008FB16F /* purchasetest */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1C1BC36119C688EE008FB16F /* Build configuration list for PBXNativeTarget "DemoForEasyPurchase" */;
+			buildConfigurationList = 1C1BC36119C688EE008FB16F /* Build configuration list for PBXNativeTarget "purchasetest" */;
 			buildPhases = (
 				1C1BC32B19C688EE008FB16F /* Sources */,
 				1C1BC32C19C688EE008FB16F /* Frameworks */,
@@ -233,7 +236,7 @@
 			dependencies = (
 				1C1BC3EC19C6F452008FB16F /* PBXTargetDependency */,
 			);
-			name = DemoForEasyPurchase;
+			name = purchasetest;
 			productName = DemoForEasyPurchase;
 			productReference = 1C1BC32F19C688EE008FB16F /* DemoForEasyPurchase.app */;
 			productType = "com.apple.product-type.application";
@@ -265,6 +268,9 @@
 				LastUpgradeCheck = 0510;
 				ORGANIZATIONNAME = darklinden;
 				TargetAttributes = {
+					1C1BC32E19C688EE008FB16F = {
+						DevelopmentTeam = 38S4C479U7;
+					};
 					1C1BC34F19C688EE008FB16F = {
 						TestTargetID = 1C1BC32E19C688EE008FB16F;
 					};
@@ -289,7 +295,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				1C1BC32E19C688EE008FB16F /* DemoForEasyPurchase */,
+				1C1BC32E19C688EE008FB16F /* purchasetest */,
 				1C1BC34F19C688EE008FB16F /* DemoForEasyPurchaseTests */,
 			);
 		};
@@ -317,6 +323,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C1633B419C7C9B200D15CE8 /* ViewController.xib in Resources */,
 				1C1BC34B19C688EE008FB16F /* Images.xcassets in Resources */,
 				1C1BC33D19C688EE008FB16F /* InfoPlist.strings in Resources */,
 				1C1BC38019C68951008FB16F /* VC_selectProduct.xib in Resources */,
@@ -360,7 +367,7 @@
 /* Begin PBXTargetDependency section */
 		1C1BC35619C688EE008FB16F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 1C1BC32E19C688EE008FB16F /* DemoForEasyPurchase */;
+			target = 1C1BC32E19C688EE008FB16F /* purchasetest */;
 			targetProxy = 1C1BC35519C688EE008FB16F /* PBXContainerItemProxy */;
 		};
 		1C1BC3EC19C6F452008FB16F /* PBXTargetDependency */ = {
@@ -465,6 +472,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DemoForEasyPurchase/DemoForEasyPurchase-Prefix.pch";
 				INFOPLIST_FILE = "DemoForEasyPurchase/DemoForEasyPurchase-Info.plist";
@@ -479,6 +487,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DemoForEasyPurchase/DemoForEasyPurchase-Prefix.pch";
 				INFOPLIST_FILE = "DemoForEasyPurchase/DemoForEasyPurchase-Info.plist";
@@ -540,7 +549,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1C1BC36119C688EE008FB16F /* Build configuration list for PBXNativeTarget "DemoForEasyPurchase" */ = {
+		1C1BC36119C688EE008FB16F /* Build configuration list for PBXNativeTarget "purchasetest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1C1BC36219C688EE008FB16F /* Debug */,

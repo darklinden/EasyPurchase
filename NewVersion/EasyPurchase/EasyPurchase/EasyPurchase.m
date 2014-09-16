@@ -22,11 +22,11 @@
 //single purchase
 + (void)purchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle
 {
-    [EPPurchaseObserver purchase:product completion:^(NSString *productId, NSString *errMsg) {
+    [EPPurchaseObserver purchase:product completion:^(NSString *productId, NSString *transactionId, NSString *errMsg) {
         if (errMsg) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completionHandle) {
-                    completionHandle(product.productIdentifier, errMsg);
+                    completionHandle(productId, nil, errMsg);
                 }
             });
         }
@@ -35,22 +35,33 @@
                 if (errMsg) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (completionHandle) {
-                            completionHandle(product.productIdentifier, errMsg);
+                            completionHandle(productId, nil, errMsg);
                         }
                     });
                 }
                 else {
-                    if ([passedProducts indexOfObject:product.productIdentifier] != NSNotFound) {
+                    BOOL match = NO;
+                    for (NSDictionary *dict in passedProducts) {
+                        NSString *pid = dict[@"product_id"];
+                        NSString *tid = dict[@"transaction_id"];
+                        
+                        if ([productId isEqualToString:pid] && [transactionId isEqualToString:tid]) {
+                            match = YES;
+                            break;
+                        }
+                    }
+                    
+                    if (match) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (completionHandle) {
-                                completionHandle(product.productIdentifier, nil);
+                                completionHandle(productId, transactionId, nil);
                             }
                         });
                     }
                     else {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (completionHandle) {
-                                completionHandle(product.productIdentifier, IAP_LOCALSTR_CheckReceiptFailed);
+                                completionHandle(productId, nil, IAP_LOCALSTR_CheckReceiptFailed);
                             }
                         });
                     }
@@ -77,12 +88,12 @@
         if (!product) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completionHandle) {
-                    completionHandle(productId, IAP_LOCALSTR_GetProductFailed);
+                    completionHandle(productId, nil, IAP_LOCALSTR_GetProductFailed);
                 }
             });
         }
         else {
-            [self purchase:productId completion:completionHandle];
+            [self purchase:product completion:completionHandle];
         }
     }];
 }
@@ -109,11 +120,22 @@
             else {
                 [EPReceiptChecker checkReceiptWithCompletion:^(NSArray *passedProducts, NSString *errMsg) {
                     
-                    NSMutableSet *set1 = [NSMutableSet setWithArray:restoredProducts];
-                    NSMutableSet *set2 = [NSMutableSet setWithArray:passedProducts];
-                    [set1 intersectSet:set2]; //this will give you only the obejcts that are in both sets
-                    
-                    NSArray *result = [set1 allObjects];
+                    NSMutableArray *result = [NSMutableArray array];
+                    for (NSDictionary *dr in restoredProducts) {
+                        for (NSDictionary *dp in passedProducts) {
+                            NSString *rpid = dr[@"product_id"];
+                            NSString *rtid = dr[@"transaction_id"];
+                            
+                            NSString *ppid = dp[@"product_id"];
+                            NSString *ptid = dp[@"transaction_id"];
+                            
+                            if ([rpid isEqualToString:ppid] && [rtid isEqualToString:ptid]) {
+//                                NSDictionary *dict = @{@"product_id": ppid,
+//                                                       @"transaction_id": ptid};
+                                [result addObject:ppid];
+                            }
+                        }
+                    }
                     
                     if (result.count) {
                         dispatch_async(dispatch_get_main_queue(), ^{

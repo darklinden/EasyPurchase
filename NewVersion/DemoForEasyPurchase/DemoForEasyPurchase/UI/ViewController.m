@@ -23,16 +23,7 @@
 
 - (void)pBtn_cancel_clicked:(id)sender
 {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0
     [self dismissViewControllerAnimated:YES completion:nil];
-#else
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.f) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-    else {
-        [self dismissModalViewControllerAnimated:YES];
-    }
-#endif
 }
 
 - (void)viewDidLoad
@@ -75,46 +66,53 @@
     pVC_selectProduct.delegate = self;
     UINavigationController *pNC_nav = [[UINavigationController alloc] initWithRootViewController:pVC_selectProduct];
     
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0
     [self presentViewController:pNC_nav animated:YES completion:nil];
-#else
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.f) {
-        [self presentViewController:pNC_nav animated:YES completion:nil];
-    }
-    else {
-        [self presentModalViewController:pNC_nav animated:YES];
-    }
-#endif
 }
 
 - (IBAction)pBtn_buyClick:(id)sender
 {
     if (self.pSKProduct_selected) {
         [self showLoading];
-#warning
-//        [[C_IapPurchaseController mainIapPurchaseController] setDelegate:self];
-//        [C_IapPurchaseController requestPurchaseProduct:self.pSKProduct_selected];
+        
+        [EasyPurchase purchase:self.pSKProduct_selected completion:^(NSString *productId, NSString *transactionId, NSString *errMsg) {
+            
+            [self removeLoading];
+            
+            NSString *message = nil;
+            
+            if (!errMsg) {
+                message = [NSString stringWithFormat:@"product %@ purchase success", productId];
+            }
+            else {
+                if ([errMsg isEqualToString:IAP_LOCALSTR_SKErrorPaymentCancelled]) {
+                    //throw away
+                    NSLog(@"user canceled. remove loading and do nothing.");
+                }
+                else {
+                    message = [NSString stringWithFormat:@"product %@ purchase failed. error msg: %@", productId, errMsg];
+                }
+            }
+            
+            if (message) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                [alert show];
+            }
+        }];
     }
 }
 
 - (IBAction)pBtn_restoreClick:(id)sender
 {
     [self showLoading];
-#warning
-//    [[C_IapPurchaseController mainIapPurchaseController] setDelegate:self];
-//    [C_IapPurchaseController requestRestore];
-}
-
-- (IBAction)pBtn_endpurchaseClick:(id)sender
-{
-#warning
-//    [C_IapPurchaseController close];
-}
-
-- (IBAction)pBtn_clearClick:(id)sender
-{
-#warning
-//    [[NSUserDefaults standardUserDefaults] setObject:@"" forKey:IAP_USER_DEFAULT_FIRST_RUN];
+    
+    [EasyPurchase restorePurchaseWithCompletion:^(NSArray *restoredProducts, NSString *errMsg) {
+        [self removeLoading];
+        
+        NSString *messgae = [NSString stringWithFormat:@"Restored products: %@ error: %@", restoredProducts, errMsg];
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:messgae delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
+    }];
 }
 
 - (IBAction)pBtn_productClick:(id)sender
@@ -127,15 +125,14 @@
 
 - (IBAction)pBtn_checkClick:(id)sender
 {
-#warning
-//    if ([C_IapPurchaseController assetIsSubscribe:self.pBtn_selectProduct.currentTitle]) {
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:@"purchased" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
-//        [alert show];
-//    }
-//    else {
-//        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:@"haven't purchased" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
-//        [alert show];
-//    }
+    if ([EasyPurchase isPurchased:self.pBtn_selectProduct.currentTitle]) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:@"purchased" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
+        [alert show];
+    }
+    else {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:@"haven't purchased" delegate:nil cancelButtonTitle:@"ok" otherButtonTitles:nil, nil];
+        [alert show];
+    }
 }
 
 - (void)viewSellProduct:(NSNumber*)appId
@@ -163,67 +160,10 @@
     }];
 }
 
-#pragma mark - for purchase
-- (void)purchaseProduct:(SKProduct *)product errMsg:(NSString *)errMsg
-{
-#warning
-//    [C_IapPurchaseController close];
-    [self removeLoading];
-    
-    NSString *pStr_msg = nil;
-    
-    if (!errMsg) {
-        pStr_msg = [NSString stringWithFormat:@"product %@ purchase success", product.productIdentifier];
-    }
-    else {
-        if ([errMsg isEqualToString:IAP_LOCALSTR_SKErrorPaymentCancelled]) {
-            //throw away
-            NSLog(@"user canceled. remove loading and do nothing.");
-        }
-        else {
-            pStr_msg = [NSString stringWithFormat:@"product %@ purchase failed. error msg: %@", product.productIdentifier, errMsg];
-        }
-    }
-    
-    if (pStr_msg) {
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:pStr_msg delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-        [alert show];
-    }
-}
-
-#pragma mark - for restore
-- (void)restoreProducts:(NSMutableArray *)products errMsg:(NSString *)errMsg
-{
-    [self removeLoading];
-#warning 
-//    [C_IapPurchaseController close];
-    
-    NSString *pStr_msg = nil;
-    
-    if (!errMsg) {
-        pStr_msg = [NSString stringWithFormat:@"restore success: %@", products];
-    }
-    else {
-        pStr_msg = [NSString stringWithFormat:@"restore failed with error: %@", errMsg];
-    }
-    
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:pStr_msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-    [alert show];
-}
-
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     NSLog(@"%@", self);
-#if __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0
     [self dismissViewControllerAnimated:YES completion:nil];
-#else
-    if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 6.f) {
-        [self dismissViewControllerAnimated:YES completion:nil];
-    }
-    else {
-        [self dismissModalViewControllerAnimated:YES];
-    }
-#endif
 }
 
 - (void)dealloc

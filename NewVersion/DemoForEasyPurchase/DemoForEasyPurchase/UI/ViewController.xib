@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1792" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ViewController">
+            <connections>
+                <outlet property="pBtn_selectProduct" destination="27" id="29"/>
+                <outlet property="view" destination="6" id="7"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="6">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8">
+                    <rect key="frame" x="0.0" y="268" width="320" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="8VI-DO-jP3"/>
+                    </constraints>
+                    <state key="normal" title="Purchase">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="pBtn_buyClick:" destination="-1" eventType="touchUpInside" id="12"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9">
+                    <rect key="frame" x="0.0" y="328" width="320" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="iAP-UY-pH4"/>
+                    </constraints>
+                    <state key="normal" title="Restore">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="pBtn_restoreClick:" destination="-1" eventType="touchUpInside" id="11"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="25">
+                    <rect key="frame" x="0.0" y="388" width="320" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="VzH-Jg-97m"/>
+                    </constraints>
+                    <state key="normal" title="Check Purchased Or Not">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="pBtn_checkClick:" destination="-1" eventType="touchUpInside" id="26"/>
+                    </connections>
+                </button>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="27">
+                    <rect key="frame" x="0.0" y="208" width="320" height="40"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="oEz-g9-8S6"/>
+                    </constraints>
+                    <state key="normal" title="List Product &amp; Select">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                    <connections>
+                        <action selector="pBtn_selectProductClick:" destination="-1" eventType="touchUpInside" id="28"/>
+                    </connections>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="0.75" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="25" secondAttribute="trailing" id="8KX-iW-pxe"/>
+                <constraint firstAttribute="trailing" secondItem="27" secondAttribute="trailing" id="9QK-x0-gOj"/>
+                <constraint firstItem="25" firstAttribute="top" secondItem="9" secondAttribute="bottom" constant="20" id="9dx-eQ-JW3"/>
+                <constraint firstItem="8" firstAttribute="top" secondItem="27" secondAttribute="bottom" constant="20" id="C7K-el-c8D"/>
+                <constraint firstItem="25" firstAttribute="leading" secondItem="6" secondAttribute="leading" id="Sdk-rN-MFd"/>
+                <constraint firstItem="9" firstAttribute="leading" secondItem="6" secondAttribute="leading" id="W3a-zg-5M8"/>
+                <constraint firstAttribute="bottom" secondItem="25" secondAttribute="bottom" constant="140" id="drH-VY-1AP"/>
+                <constraint firstAttribute="trailing" secondItem="8" secondAttribute="trailing" id="gyj-HK-oUf"/>
+                <constraint firstItem="8" firstAttribute="leading" secondItem="6" secondAttribute="leading" id="jLr-I9-JVd"/>
+                <constraint firstAttribute="trailing" secondItem="9" secondAttribute="trailing" id="q3m-0L-abt"/>
+                <constraint firstItem="9" firstAttribute="top" secondItem="8" secondAttribute="bottom" constant="20" id="qVe-BG-TMz"/>
+                <constraint firstItem="27" firstAttribute="leading" secondItem="6" secondAttribute="leading" id="snm-Qd-3YC"/>
+            </constraints>
+            <simulatedStatusBarMetrics key="simulatedStatusBarMetrics"/>
+            <simulatedNavigationBarMetrics key="simulatedTopBarMetrics" prompted="NO"/>
+            <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+        </view>
+    </objects>
+</document>

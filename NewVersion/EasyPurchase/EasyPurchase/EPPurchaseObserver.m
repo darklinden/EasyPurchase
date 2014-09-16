@@ -27,7 +27,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, assign) EPPurchaseType    type;
 @property (nonatomic, strong) NSString          *purchaseProductId;
-@property (nonatomic, strong) NSMutableArray    *restoredProductIds;
+@property (nonatomic, strong) NSMutableArray    *restoredProducts;
 
 // Sent when the transaction array has changed (additions or state changes).  Client should check state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions;
@@ -54,7 +54,7 @@ typedef enum : NSUInteger {
 {
     if ([self hasDeadLock]) {
         if (completionHandle) {
-            completionHandle(product.productIdentifier, IAP_LOCALSTR_InAppPurchaseDeadLock);
+            completionHandle(product.productIdentifier, nil, IAP_LOCALSTR_InAppPurchaseDeadLock);
         }
     }
     else {
@@ -87,7 +87,7 @@ typedef enum : NSUInteger {
         //ob should be Singleton
         ob.ticket = [[ObjHolder sharedHolder] pushObject:ob];
         ob.type = EPPurchaseTypeRestore;
-        ob.restoredProductIds = [NSMutableArray array];
+        ob.restoredProducts = [NSMutableArray array];
         ob->_restoreCompletionHandle = completionHandle;
         
         [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
@@ -102,13 +102,23 @@ typedef enum : NSUInteger {
 
 - (void)doFinishTransaction:(SKPaymentTransaction *)transaction error:(NSString *)errMsg
 {
+    if (transaction.transactionState == SKPaymentTransactionStatePurchased
+        || transaction.transactionState == SKPaymentTransactionStateRestored) {
+        IAP_OBSERVER_LOG(@"transaction type:%d transaction id: %@, original transaction id: %@", transaction.transactionState, transaction.transactionIdentifier, transaction.originalTransaction.transactionIdentifier);    
+    }
+    
     switch (_type) {
         case EPPurchaseTypePurchase:
         {
             if ([transaction.payment.productIdentifier isEqualToString:_purchaseProductId]) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (_purchaseCompletionHandle) {
-                        _purchaseCompletionHandle([transaction.payment.productIdentifier copy], [errMsg copy]);
+                        if (transaction.originalTransaction) {
+                            _purchaseCompletionHandle(transaction.payment.productIdentifier, transaction.originalTransaction.transactionIdentifier, errMsg);
+                        }
+                        else {
+                            _purchaseCompletionHandle(transaction.payment.productIdentifier, transaction.transactionIdentifier, errMsg);
+                        }
                     }
                     
                     [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
@@ -124,7 +134,11 @@ typedef enum : NSUInteger {
         case EPPurchaseTypeRestore:
         {
             if (!errMsg) {
-                [_restoredProductIds addObject:transaction.payment.productIdentifier];
+                if (transaction.originalTransaction) {
+                    NSDictionary *dict = @{@"product_id": transaction.payment.productIdentifier,
+                                           @"transaction_id": transaction.originalTransaction.transactionIdentifier};
+                    [_restoredProducts addObject:dict];
+                }
             }
             
             [[SKPaymentQueue defaultQueue] finishTransaction:transaction];
@@ -259,7 +273,7 @@ typedef enum : NSUInteger {
     if (_type == EPPurchaseTypeRestore) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_restoreCompletionHandle) {
-                _restoreCompletionHandle([_restoredProductIds copy], [error.localizedDescription copy]);
+                _restoreCompletionHandle([_restoredProducts copy], [error.localizedDescription copy]);
             }
             
             [self clean];
@@ -276,7 +290,7 @@ typedef enum : NSUInteger {
     if (_type == EPPurchaseTypeRestore) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_restoreCompletionHandle) {
-                _restoreCompletionHandle([_restoredProductIds copy], nil);
+                _restoreCompletionHandle([_restoredProducts copy], nil);
             }
             
             [self clean];

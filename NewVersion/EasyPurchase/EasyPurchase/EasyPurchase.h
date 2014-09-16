@@ -23,11 +23,18 @@
 #define IAP_SECURE_VALUE_COUNT_KEY          @"IAP_SECURE_VALUE_COUNT_KEY"
 #define IAP_SECURE_VALUE_KEY_FORMAT         @"IAP_SECURE_VALUE_KEY_%d"
 
+#if 1
 #define IAP_OBSERVER_LOG( s, ... )          NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
 #define IAP_PRODUCT_LOG( s, ... )           NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
 #define IAP_CHECK_LOG( s, ... )             NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
 #define IAP_CONTROLLER_LOG( s, ... )        NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+#else
+#define IAP_OBSERVER_LOG( s, ... )          do {} while (0)
+#define IAP_PRODUCT_LOG( s, ... )           do {} while (0)
+#define IAP_CHECK_LOG( s, ... )             do {} while (0)
+#define IAP_CONTROLLER_LOG( s, ... )        do {} while (0)
 
+#endif
 // user cancelled the request, etc.
 #define IAP_LOCALSTR_SKErrorPaymentCancelled            @"IAP_LOCALSTR_SKErrorPaymentCancelled"
 
@@ -63,7 +70,7 @@
 
 typedef void(^EPProductInfoCompletionHandle)(NSArray *responseProducts);
 
-typedef void(^EPPurchaseCompletionHandle)(NSString *productId, NSString *errMsg);
+typedef void(^EPPurchaseCompletionHandle)(NSString *productId, NSString *transactionId, NSString *errMsg);
 
 typedef void(^EPRestoreCompletionHandle)(NSArray *restoredProducts, NSString *errMsg);
 
@@ -71,6 +78,7 @@ typedef void(^EPRestoreCompletionHandle)(NSArray *restoredProducts, NSString *er
 
 //for Non-Consumable
 + (BOOL)isPurchased:(NSString *)productId;
++ (void)savePurchase:(NSString *)productId;
 
 //request products informations
 + (void)requestProductsByIds:(NSArray *)productIds completion:(EPProductInfoCompletionHandle)completionHandle;
