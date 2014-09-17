@@ -12,6 +12,9 @@ typedef void(^EPReceiptCheckerCompletionHandle)(NSArray *passedProducts, NSStrin
 
 @interface EPReceiptChecker : NSObject
 
+#warning use apple webservice check to validate receipt, may should be rewrite after ios8 release
+#warning local validation solution on https://github.com/robotmedia/RMStore may works, but I think this is not the last solution, waiting for apple doc
+
 + (void)checkReceiptWithCompletion:(EPReceiptCheckerCompletionHandle)completionHandle;
 
 @end

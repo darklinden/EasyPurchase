@@ -47,12 +47,21 @@ typedef enum : NSUInteger {
 
 + (BOOL)hasDeadLock
 {
+#warning do this situation has any relationship with SKPaymentTransactionStateDeferred?
+    /*
+        any time when you start a purchase or restore, if there 's transaction in payment queue it may be a great chance to be a dead lock like "purchase has made but didn't download" and become "user canceled" 
+     */
     return !![[[SKPaymentQueue defaultQueue] transactions] count];
 }
 
 + (void)purchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle
 {
-    if ([self hasDeadLock]) {
+    if (![SKPaymentQueue canMakePayments]) {
+        if (completionHandle) {
+            completionHandle(product.productIdentifier, nil, IAP_LOCALSTR_SKErrorPaymentNotAllowed);
+        }
+    }
+    else if ([self hasDeadLock]) {
         if (completionHandle) {
             completionHandle(product.productIdentifier, nil, IAP_LOCALSTR_InAppPurchaseDeadLock);
         }
@@ -155,6 +164,17 @@ typedef enum : NSUInteger {
     for (SKPaymentTransaction *transaction in transactions) {
         
 		switch (transaction.transactionState) {
+                
+            case SKPaymentTransactionStateDeferred:
+            {
+                // The transaction is in the queue, but its final status is pending external action.
+#warning may need to deal as usercaneled to wait for the transaction finished or hang on as SKPaymentTransactionStatePurchasing
+#warning TODO: rewrite logic after ios8 released
+                IAP_OBSERVER_LOG(@"\n");
+                IAP_OBSERVER_LOG(@"productIdentifier %@", transaction.payment.productIdentifier);
+                IAP_OBSERVER_LOG(@"SKPaymentTransactionStateDeferred");
+                break;
+            }
 				
 			case SKPaymentTransactionStatePurchasing:
             {

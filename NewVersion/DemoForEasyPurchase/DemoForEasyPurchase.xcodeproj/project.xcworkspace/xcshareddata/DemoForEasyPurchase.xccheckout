@@ -10,29 +10,29 @@
 	<string>DemoForEasyPurchase</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>809DF3B0-6D74-4AC1-8C34-0DD7FEC56DB6</key>
+		<key>32FA44A5BB30F0EA0E7D80DD57EDFCDE6222E568</key>
 		<string>https://github.com/darklinden/EasyPurchase.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>NewVersion/DemoForEasyPurchase/DemoForEasyPurchase.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>809DF3B0-6D74-4AC1-8C34-0DD7FEC56DB6</key>
+		<key>32FA44A5BB30F0EA0E7D80DD57EDFCDE6222E568</key>
 		<string>../../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/darklinden/EasyPurchase.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>809DF3B0-6D74-4AC1-8C34-0DD7FEC56DB6</string>
+	<string>32FA44A5BB30F0EA0E7D80DD57EDFCDE6222E568</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>809DF3B0-6D74-4AC1-8C34-0DD7FEC56DB6</string>
+			<string>32FA44A5BB30F0EA0E7D80DD57EDFCDE6222E568</string>
 			<key>IDESourceControlWCCName</key>
 			<string>EasyPurchase</string>
 		</dict>
