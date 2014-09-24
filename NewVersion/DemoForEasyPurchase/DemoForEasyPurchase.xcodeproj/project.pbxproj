@@ -28,6 +28,9 @@
 		1C1BC37E19C68951008FB16F /* RootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1C1BC37719C68951008FB16F /* RootViewController.xib */; };
 		1C1BC37F19C68951008FB16F /* VC_selectProduct.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1BC37919C68951008FB16F /* VC_selectProduct.m */; };
 		1C1BC38119C68951008FB16F /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C1BC37C19C68951008FB16F /* ViewController.m */; };
+		1C3CC2A919D2977500262AEB /* AppleIncRootCertificate.cer in Resources */ = {isa = PBXBuildFile; fileRef = 1C3CC2A819D2977500262AEB /* AppleIncRootCertificate.cer */; };
+		1C3CC2B419D2A56600262AEB /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C3CC2B319D2A55400262AEB /* libcrypto.a */; };
+		1C3CC2B519D2A56600262AEB /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C3CC2B119D2A55400262AEB /* libssl.a */; };
 		1C63607219C9751A009CA284 /* EasyPurchase.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C63606919C9751A009CA284 /* EasyPurchase.m */; };
 		1C63607319C9751A009CA284 /* EPProductInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C63606B19C9751A009CA284 /* EPProductInfo.m */; };
 		1C63607419C9751A009CA284 /* EPPurchaseObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 1C63606D19C9751A009CA284 /* EPPurchaseObserver.m */; };
@@ -42,6 +45,34 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1C1BC32E19C688EE008FB16F;
 			remoteInfo = DemoForEasyPurchase;
+		};
+		1C3CC2B019D2A55400262AEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1C3CC2AA19D2A55400262AEB /* openssl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = D2AAC07E0554694100DB518D;
+			remoteInfo = ssl;
+		};
+		1C3CC2B219D2A55400262AEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1C3CC2AA19D2A55400262AEB /* openssl.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = A0511C5A127770FD00DE46C4;
+			remoteInfo = crypto;
+		};
+		1C3CC2B619D2A56F00262AEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1C3CC2AA19D2A55400262AEB /* openssl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = D2AAC07D0554694100DB518D;
+			remoteInfo = ssl;
+		};
+		1C3CC2B819D2A56F00262AEB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 1C3CC2AA19D2A55400262AEB /* openssl.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = A0511C51127770FD00DE46C4;
+			remoteInfo = crypto;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -77,6 +108,8 @@
 		1C1BC37919C68951008FB16F /* VC_selectProduct.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = VC_selectProduct.m; sourceTree = "<group>"; };
 		1C1BC37B19C68951008FB16F /* ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		1C1BC37C19C68951008FB16F /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		1C3CC2A819D2977500262AEB /* AppleIncRootCertificate.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = AppleIncRootCertificate.cer; sourceTree = "<group>"; };
+		1C3CC2AA19D2A55400262AEB /* openssl.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openssl.xcodeproj; path = ../openssl/openssl.xcodeproj; sourceTree = "<group>"; };
 		1C63606819C9751A009CA284 /* EasyPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EasyPurchase.h; sourceTree = "<group>"; };
 		1C63606919C9751A009CA284 /* EasyPurchase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EasyPurchase.m; sourceTree = "<group>"; };
 		1C63606A19C9751A009CA284 /* EPProductInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EPProductInfo.h; sourceTree = "<group>"; };
@@ -94,6 +127,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C3CC2B419D2A56600262AEB /* libcrypto.a in Frameworks */,
+				1C3CC2B519D2A56600262AEB /* libssl.a in Frameworks */,
 				1C1BC33519C688EE008FB16F /* CoreGraphics.framework in Frameworks */,
 				1C1BC33719C688EE008FB16F /* UIKit.framework in Frameworks */,
 				1C1BC33319C688EE008FB16F /* Foundation.framework in Frameworks */,
@@ -153,6 +188,7 @@
 		1C1BC32619C688EE008FB16F = {
 			isa = PBXGroup;
 			children = (
+				1C3CC2AA19D2A55400262AEB /* openssl.xcodeproj */,
 				1C63606719C9751A009CA284 /* EasyPurchase */,
 				1C13401C19C822C1004973F2 /* ThirdPartLib */,
 				1C1BC33819C688EE008FB16F /* DemoForEasyPurchase */,
@@ -239,9 +275,19 @@
 			path = UI;
 			sourceTree = "<group>";
 		};
+		1C3CC2AB19D2A55400262AEB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				1C3CC2B119D2A55400262AEB /* libssl.a */,
+				1C3CC2B319D2A55400262AEB /* libcrypto.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		1C63606719C9751A009CA284 /* EasyPurchase */ = {
 			isa = PBXGroup;
 			children = (
+				1C3CC2A819D2977500262AEB /* AppleIncRootCertificate.cer */,
 				1C63606819C9751A009CA284 /* EasyPurchase.h */,
 				1C63606919C9751A009CA284 /* EasyPurchase.m */,
 				1C63606A19C9751A009CA284 /* EPProductInfo.h */,
@@ -271,6 +317,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				1C3CC2B719D2A56F00262AEB /* PBXTargetDependency */,
+				1C3CC2B919D2A56F00262AEB /* PBXTargetDependency */,
 			);
 			name = purchasetest;
 			productName = DemoForEasyPurchase;
@@ -323,6 +371,12 @@
 			mainGroup = 1C1BC32619C688EE008FB16F;
 			productRefGroup = 1C1BC33019C688EE008FB16F /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 1C3CC2AB19D2A55400262AEB /* Products */;
+					ProjectRef = 1C3CC2AA19D2A55400262AEB /* openssl.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				1C1BC32E19C688EE008FB16F /* purchasetest */,
@@ -331,6 +385,23 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		1C3CC2B119D2A55400262AEB /* libssl.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libssl.a;
+			remoteRef = 1C3CC2B019D2A55400262AEB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		1C3CC2B319D2A55400262AEB /* libcrypto.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libcrypto.a;
+			remoteRef = 1C3CC2B219D2A55400262AEB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		1C1BC32D19C688EE008FB16F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
@@ -338,6 +409,7 @@
 			files = (
 				1C13401B19C81D28004973F2 /* VC_selectProduct.xib in Resources */,
 				1C1633B419C7C9B200D15CE8 /* ViewController.xib in Resources */,
+				1C3CC2A919D2977500262AEB /* AppleIncRootCertificate.cer in Resources */,
 				1C1BC34B19C688EE008FB16F /* Images.xcassets in Resources */,
 				1C1BC33D19C688EE008FB16F /* InfoPlist.strings in Resources */,
 				1C1BC37E19C68951008FB16F /* RootViewController.xib in Resources */,
@@ -390,6 +462,16 @@
 			isa = PBXTargetDependency;
 			target = 1C1BC32E19C688EE008FB16F /* purchasetest */;
 			targetProxy = 1C1BC35519C688EE008FB16F /* PBXContainerItemProxy */;
+		};
+		1C3CC2B719D2A56F00262AEB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ssl;
+			targetProxy = 1C3CC2B619D2A56F00262AEB /* PBXContainerItemProxy */;
+		};
+		1C3CC2B919D2A56F00262AEB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = crypto;
+			targetProxy = 1C3CC2B819D2A56F00262AEB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -491,6 +573,11 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DemoForEasyPurchase/DemoForEasyPurchase-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../openssl/openssl/include",
+				);
 				INFOPLIST_FILE = "DemoForEasyPurchase/DemoForEasyPurchase-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -506,6 +593,11 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "DemoForEasyPurchase/DemoForEasyPurchase-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(SRCROOT)/../openssl/openssl/include",
+				);
 				INFOPLIST_FILE = "DemoForEasyPurchase/DemoForEasyPurchase-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";

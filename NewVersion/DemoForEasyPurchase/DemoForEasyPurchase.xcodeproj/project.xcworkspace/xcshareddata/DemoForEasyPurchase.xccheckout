@@ -12,6 +12,8 @@
 	<dict>
 		<key>32FA44A5BB30F0EA0E7D80DD57EDFCDE6222E568</key>
 		<string>https://github.com/darklinden/EasyPurchase.git</string>
+		<key>D482924C5AFED88D3216BDD72C2302DD55AD6268</key>
+		<string>https://github.com/darklinden/openssl-xcode.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>NewVersion/DemoForEasyPurchase/DemoForEasyPurchase.xcodeproj/project.xcworkspace</string>
@@ -19,6 +21,8 @@
 	<dict>
 		<key>32FA44A5BB30F0EA0E7D80DD57EDFCDE6222E568</key>
 		<string>../../../..</string>
+		<key>D482924C5AFED88D3216BDD72C2302DD55AD6268</key>
+		<string>../../../../../openssl-xcode</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/darklinden/EasyPurchase.git</string>
@@ -35,6 +39,14 @@
 			<string>32FA44A5BB30F0EA0E7D80DD57EDFCDE6222E568</string>
 			<key>IDESourceControlWCCName</key>
 			<string>EasyPurchase</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D482924C5AFED88D3216BDD72C2302DD55AD6268</string>
+			<key>IDESourceControlWCCName</key>
+			<string>openssl-xcode</string>
 		</dict>
 	</array>
 </dict>

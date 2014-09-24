@@ -9,10 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "EasyPurchase.h"
 
-typedef enum : NSUInteger {
-    SKProductPaymentTypeNonConsumable,
-    SKProductPaymentTypeConsumable
-} SKProductPaymentType;
+
 
 @protocol VC_selectProductDelegate <NSObject>
 - (void)didSelectProduct:(SKProduct *)product type:(SKProductPaymentType)type;

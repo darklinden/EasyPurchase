@@ -11,6 +11,9 @@
 #import "EPPurchaseObserver.h"
 #import "EPReceiptChecker.h"
 
+const NSString *bundleVersion = @"1.0";
+const NSString *bundleIdentifier = @"darklinden.purchasetest";
+
 @implementation EasyPurchase
 
 #pragma mark - product info
@@ -148,22 +151,24 @@
 }
 
 //single purchase
-+ (void)nonConsumablePurchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle
++ (void)purchase:(SKProduct *)product type:(SKProductPaymentType)type completion:(EPPurchaseCompletionHandle)completionHandle
 {
-    [EPPurchaseObserver purchase:product completion:^(NSString *productId, NSString *transactionId, NSString *errMsg) {
-        if (errMsg) {
+    [EPPurchaseObserver purchase:product type:type
+                      completion:^(NSString *productId, NSString *transactionId, EPError error) {
+        if (EPErrorSuccess != error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completionHandle) {
-                    completionHandle(productId, nil, errMsg);
+                    completionHandle(productId, nil, error);
                 }
             });
         }
         else {
-            [EPReceiptChecker checkReceiptWithCompletion:^(NSArray *passedProducts, NSString *errMsg) {
-                if (errMsg) {
+            BOOL refreshable = (SKProductPaymentTypeNonConsumable == type);
+            [EPReceiptChecker checkReceiptWithBundleId:bundleIdentifier version:bundleVersion refreshable:refreshable completion:^(NSArray *passedProducts, EPError error) {
+                if (EPErrorSuccess != error) {
                     dispatch_async(dispatch_get_main_queue(), ^{
                         if (completionHandle) {
-                            completionHandle(productId, nil, errMsg);
+                            completionHandle(productId, nil, error);
                         }
                     });
                 }
@@ -182,14 +187,14 @@
                     if (match) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (completionHandle) {
-                                completionHandle(productId, transactionId, nil);
+                                completionHandle(productId, transactionId, error);
                             }
                         });
                     }
                     else {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (completionHandle) {
-                                completionHandle(productId, nil, IAP_LOCALSTR_CheckReceiptFailed);
+                                completionHandle(productId, transactionId, EPErrorCheckReceiptFailed);
                             }
                         });
                     }
@@ -200,10 +205,10 @@
 }
 
 //single purchase
-+ (void)nonConsumablePurchaseProductById:(NSString *)productId completion:(EPPurchaseCompletionHandle)completionHandle
++ (void)purchaseProductById:(NSString *)productId type:(SKProductPaymentType)type completion:(EPPurchaseCompletionHandle)completionHandle
 {
     //get product by id
-    [EPProductInfo requestProductsByIds:@[productId] completion:^(NSArray *responseProducts) {
+    [EPProductInfo requestProductsByIds:@[productId] completion:^(NSArray *requestProductIds, NSArray *responseProducts) {
         
         SKProduct *product = nil;
         for (SKProduct *p in responseProducts) {
@@ -216,12 +221,12 @@
         if (!product) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completionHandle) {
-                    completionHandle(productId, nil, IAP_LOCALSTR_GetProductFailed);
+                    completionHandle(productId, nil, EPErrorGetProductFailed);
                 }
             });
         }
         else {
-            [self nonConsumablePurchase:product completion:completionHandle];
+            [self purchase:product type:type completion:completionHandle];
         }
     }];
 }
@@ -229,11 +234,12 @@
 //restore
 + (void)restorePurchaseWithCompletion:(EPRestoreCompletionHandle)completionHandle
 {
-    [EPPurchaseObserver restorePurchaseWithCompletion:^(NSArray *restoredProducts, NSString *errMsg) {
-        if (errMsg) {
+    [EPPurchaseObserver restorePurchaseWithCompletion:^(NSArray *restoredProducts, EPError error) {
+        
+        if (EPErrorSuccess != error) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 if (completionHandle) {
-                    completionHandle(nil, errMsg);
+                    completionHandle(nil, error);
                 }
             });
         }
@@ -241,12 +247,13 @@
             if (!restoredProducts.count) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (completionHandle) {
-                        completionHandle(nil, IAP_LOCALSTR_RestoreGetEmptyArray);
+                        completionHandle(nil, EPErrorRestoreGetEmptyArray);
                     }
                 });
             }
             else {
-                [EPReceiptChecker checkReceiptWithCompletion:^(NSArray *passedProducts, NSString *errMsg) {
+                [EPReceiptChecker checkReceiptWithBundleId:bundleIdentifier version:bundleVersion refreshable:YES
+                                                completion:^(NSArray *passedProducts, EPError error) {
                     
                     NSMutableArray *result = [NSMutableArray array];
                     for (NSDictionary *dr in restoredProducts) {
@@ -268,14 +275,14 @@
                     if (result.count) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (completionHandle) {
-                                completionHandle(result, nil);
+                                completionHandle(result, EPErrorSuccess);
                             }
                         });
                     }
                     else {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (completionHandle) {
-                                completionHandle(nil, IAP_LOCALSTR_RestoreGetEmptyArray);
+                                completionHandle(nil, EPErrorRestoreGetEmptyArray);
                             }
                         });
                     }
@@ -284,78 +291,5 @@
         }
     }];
 }
-
-#pragma mark - Consumable
-
-+ (void)consumablePurchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle
-{
-    [EPPurchaseObserver purchase:product completion:completionHandle];
-}
-
-+ (void)consumablePurchaseProductById:(NSString *)productId completion:(EPPurchaseCompletionHandle)completionHandle
-{
-    [EPProductInfo requestProductsByIds:@[productId] completion:^(NSArray *responseProducts) {
-        
-        SKProduct *product = nil;
-        for (SKProduct *p in responseProducts) {
-            if ([p.productIdentifier isEqualToString:productId]) {
-                product = p;
-                break;
-            }
-        }
-        
-        if (!product) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completionHandle) {
-                    completionHandle(productId, nil, IAP_LOCALSTR_GetProductFailed);
-                }
-            });
-        }
-        else {
-            [self consumablePurchase:product completion:completionHandle];
-        }
-    }];
-}
-
-+ (void)checkReceiptForProduct:(NSString *)productId transaction:(NSString *)transactionId completion:(EPConsumableReceiptCheckerCompletionHandle)completionHandle
-{
-    [EPReceiptChecker checkReceiptWithCompletion:^(NSArray *passedProducts, NSString *errMsg) {
-        if (errMsg) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                if (completionHandle) {
-                    completionHandle(productId, transactionId, errMsg);
-                }
-            });
-        }
-        else {
-            BOOL match = NO;
-            for (NSDictionary *dict in passedProducts) {
-                NSString *pid = dict[@"product_id"];
-                NSString *tid = dict[@"transaction_id"];
-                
-                if ([productId isEqualToString:pid] && [transactionId isEqualToString:tid]) {
-                    match = YES;
-                    break;
-                }
-            }
-            
-            if (match) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (completionHandle) {
-                        completionHandle(productId, transactionId, nil);
-                    }
-                });
-            }
-            else {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (completionHandle) {
-                        completionHandle(productId, transactionId, IAP_LOCALSTR_CheckReceiptFailed);
-                    }
-                });
-            }
-        }
-    }];
-}
-
 
 @end

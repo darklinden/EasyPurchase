@@ -70,7 +70,8 @@
         NSArray *arr = [NSArray arrayWithArray:_array_consumable];
         arr = [arr arrayByAddingObjectsFromArray:_array_nonconsumable];
         
-        [EasyPurchase requestProductsByIds:arr completion:^(NSArray *responseProducts) {
+        [EasyPurchase requestProductsByIds:arr completion:^(NSArray *requestProductIds, NSArray *responseProducts) {
+            
             [self removeLoading];
             
             self.dict_consumable = [NSMutableDictionary dictionary];

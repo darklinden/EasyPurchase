@@ -55,105 +55,37 @@
 {
     if (self.selectedProduct) {
         
-        switch (_selectedProductType) {
-            case SKProductPaymentTypeNonConsumable:
-            {
-                [V_loading showLoadingView:self.navigationController.view title:nil message:@"Non-Consumable Purchasing"];
-                [EasyPurchase nonConsumablePurchase:self.selectedProduct completion:^(NSString *productId, NSString *transactionId, NSString *errMsg) {
-                    
-                    [V_loading removeLoading];
-                    
-                    NSString *message = nil;
-                    
-                    if (!errMsg) {
-                        [EasyPurchase savePurchase:productId];
-                        message = [NSString stringWithFormat:@"product %@ purchase success", productId];
-                    }
-                    else {
-                        if ([errMsg isEqualToString:IAP_LOCALSTR_SKErrorPaymentCancelled]) {
-                            //throw away
-                            NSLog(@"user canceled. remove loading and do nothing.");
-                        }
-                        else {
-                            message = [NSString stringWithFormat:@"product %@ purchase failed. error msg: %@", productId, errMsg];
-                        }
-                    }
-                    
-                    if (message) {
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                        [alert show];
-                    }
-                }];
-            }
-                break;
-            case SKProductPaymentTypeConsumable:
-            {
-                [V_loading showLoadingView:self.navigationController.view title:nil message:@"Consumable Purchasing"];
-                [EasyPurchase consumablePurchase:self.selectedProduct completion:^(NSString *productId, NSString *transactionId, NSString *errMsg) {
-                    if (errMsg) {
-                        [V_loading removeLoading];
-                        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info"
-                                                                        message:[NSString stringWithFormat:@"product %@ purchase failed. error msg: %@", productId, errMsg]
-                                                                       delegate:nil
-                                                              cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                        [alert show];
-                    }
-                    else {
-                        [self checkPurchaseProduct:[productId copy] transaction:[transactionId copy]];
-                    }
-                }];
-            }
-                break;
-            default:
-                break;
-        }
-    }
-}
-
-- (void)checkPurchaseProduct:(NSString *)pid transaction:(NSString *)tid
-{
-    [V_loading showLoadingView:self.navigationController.view title:nil message:@"Consumable Purchase Validating"];
-    [EasyPurchase checkReceiptForProduct:pid transaction:tid completion:^(NSString *productId, NSString *transactionId, NSString *errMsg) {
-        [V_loading removeLoading];
-        
-        if (errMsg) {
-            if ([errMsg isEqualToString:IAP_LOCALSTR_CheckReceiptFailed]) {
-                
-                self.purchasingProductId = nil;
-                self.purchasingTransactionId = nil;
-                
-#warning need to save transaction id & product id for apple solution
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info"
-                                                                message:[NSString stringWithFormat:@"Product: %@ Transaction: %@ Validate failed. You may using illegal plugin to purchase. Please Close All plugins. If not, please Check your Bank Card, If you have had paid for the latest purchase, please send us your product id and transaction id, we'll contact you as soon as possible. ", pid, tid]
-                                                               delegate:nil
-                                                      cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-                [alert show];
+        [V_loading showLoadingView:self.navigationController.view title:nil message:@"Non-Consumable Purchasing"];
+        [EasyPurchase purchase:self.selectedProduct type:_selectedProductType completion:^(NSString *productId, NSString *transactionId, EPError error) {
+            
+            [V_loading removeLoading];
+            
+            NSString *message = nil;
+            
+            if (EPErrorSuccess == error) {
+                [EasyPurchase savePurchase:productId];
+                message = [NSString stringWithFormat:@"product %@ purchase success", productId];
             }
             else {
-                self.purchasingProductId = pid;
-                self.purchasingTransactionId = tid;
-                
-#warning need to save transaction id & product id for recheck, if recheck does not continue, the purchase may failed but the money paid
-                
-                //check receipt network failed, recheck or not
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info"
-                                                                message:[NSString stringWithFormat:@"Product: %@ Transaction: %@ Validate failed.  Check your network and tap 'Retry' to retry. If this alert shows several times, please send us your product id and transaction id, we'll contact you as soon as possible.", pid, tid]
-                                                               delegate:self
-                                                      cancelButtonTitle:@"Cancel" otherButtonTitles:@"Retry", nil];
+                if (EPErrorCancelled == error) {
+                    //throw away
+                    NSLog(@"user canceled. remove loading and do nothing.");
+                }
+                else {
+#if DEBUG
+                    message = [NSString stringWithFormat:@"product %@ purchase failed. error: %@", productId, EPErrorName[@(error)]];
+#else
+                    message = [NSString stringWithFormat:@"product %@ purchase failed. error code: %llu", productId, (u_int64_t)error];
+#endif
+                }
+            }
+            
+            if (message) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:message delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
                 [alert show];
             }
-        }
-        else {
-            self.purchasingProductId = nil;
-            self.purchasingTransactionId = nil;
-            
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info"
-                                                            message:[NSString stringWithFormat:@"product %@ purchase success.", pid]
-                                                           delegate:nil
-                                                  cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-            [alert show];
-        }
-    }];
+        }];
+    }
 }
 
 - (IBAction)pBtn_restoreClick:(id)sender
@@ -165,7 +97,7 @@
     }
     
     [V_loading showLoadingView:self.navigationController.view title:nil message:@"Non-Consumable Restoring"];
-    [EasyPurchase restorePurchaseWithCompletion:^(NSArray *restoredProducts, NSString *errMsg) {
+    [EasyPurchase restorePurchaseWithCompletion:^(NSArray *restoredProducts, EPError error) {
         
         [V_loading removeLoading];
         
@@ -173,7 +105,12 @@
             [EasyPurchase savePurchase:pid];
         }
         
-        NSString *messgae = [NSString stringWithFormat:@"Restored products: %@ error: %@", restoredProducts, errMsg];
+#if DEBUG
+        NSString *messgae = [NSString stringWithFormat:@"Restored products: %@ error: %@", restoredProducts, EPErrorName[@(error)]];
+#else
+        NSString *messgae = [NSString stringWithFormat:@"Restored products: %@ error code: %lld", restoredProducts, (u_int64_t)error];
+#endif
+        
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:messgae delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alert show];
@@ -233,21 +170,7 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex == 1) {
-        [self checkPurchaseProduct:_purchasingProductId transaction:_purchasingTransactionId];
-    }
-    else {
-        [V_loading removeLoading];
-        if (alertView.tag != 2014) {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info"
-                                                            message:@"If you Cancel this validation, the purchase may failed with your money paid. Still want to Cancel? "
-                                                           delegate:self
-                                                  cancelButtonTitle:@"Cancel" otherButtonTitles:@"Retry", nil];
-            alert.tag = 2014;
-            [alert show];
-
-        }
-    }
+    
 }
 
 - (void)dealloc

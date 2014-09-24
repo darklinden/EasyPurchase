@@ -13,68 +13,98 @@
 #error This lib is for iOS 7.0 and later
 #endif
 
-#define IAP_JSON_FORMAT                     @"{\"receipt-data\":\"%@\"}"
-#define IAP_SUBSCRIBE_FAILED_SANDBOX        @"21007"
-#define IAP_SUBSCRIBE_SUCCESS               @"0"
-#define IAP_SANDBOX_URL                     @"https://sandbox.itunes.apple.com/verifyReceipt"
-#define IAP_PRODUCT_URL                     @"https://buy.itunes.apple.com/verifyReceipt"
-#define IAP_RECEIPT_TIMEOUT                 10.f
+extern NSString const *bundleVersion;
+extern NSString const *bundleIdentifier;
 
 #define IAP_SECURE_VALUE_COUNT_KEY          @"IAP_SECURE_VALUE_COUNT_KEY"
 #define IAP_SECURE_VALUE_KEY_FORMAT         @"IAP_SECURE_VALUE_KEY_%lld"
 
 #if 1
-#define IAP_OBSERVER_LOG( s, ... )          NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
-#define IAP_PRODUCT_LOG( s, ... )           NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
-#define IAP_CHECK_LOG( s, ... )             NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
-#define IAP_CONTROLLER_LOG( s, ... )        NSLog(@"%@", [NSString stringWithFormat:(s), ##__VA_ARGS__])
+
+#define IAP_OBSERVER_LOG( ... )             NSLog(@"IAP_OBSERVER: %@", [NSString stringWithFormat:__VA_ARGS__])
+#define IAP_PRODUCT_LOG( ... )              NSLog(@"IAP_PRODUCT:%@", [NSString stringWithFormat:__VA_ARGS__])
+#define IAP_CHECK_LOG( ... )                NSLog(@"IAP_CHECK: %@", [NSString stringWithFormat:__VA_ARGS__])
+#define IAP_CONTROLLER_LOG( ... )           NSLog(@"IAP_CONTROLLER: %@", [NSString stringWithFormat:__VA_ARGS__])
+
 #else
+
 #define IAP_OBSERVER_LOG( s, ... )          do {} while (0)
 #define IAP_PRODUCT_LOG( s, ... )           do {} while (0)
 #define IAP_CHECK_LOG( s, ... )             do {} while (0)
 #define IAP_CONTROLLER_LOG( s, ... )        do {} while (0)
 
 #endif
-// user cancelled the request, etc.
-#define IAP_LOCALSTR_SKErrorPaymentCancelled            @"IAP_LOCALSTR_SKErrorPaymentCancelled"
 
-// A transaction error occurred, so notify user.
-#define IAP_LOCALSTR_SKErrorUnknown                     NSLocalizedString(@"IAP_LOCALSTR_SKErrorUnknown", @"")
+//if IAP_Check_DeadLock is setted to TRUE, the purchase will return an "EPErrorQueueDeadLock" error if there's any unfinished payment in queue
+#define IAP_Check_DeadLock TRUE
 
-// client is not allowed to issue the request, etc.
-#define IAP_LOCALSTR_SKErrorClientInvalid               NSLocalizedString(@"IAP_LOCALSTR_SKErrorClientInvalid", @"")
+//if IAP_Check_TransactionDeferred is setted to TRUE, the purchase will return an "EPErrorTransactionDeferred" error if an Non-Consumable purchase suffered the SKPaymentTransactionStateDeferred state
+#define IAP_Check_TransactionDeferred TRUE
 
-// purchase identifier was invalid, etc.
-#define IAP_LOCALSTR_SKErrorPaymentInvalid              NSLocalizedString(@"IAP_LOCALSTR_SKErrorPaymentInvalid", @"")
+typedef enum : NSUInteger {
+    //success
+    EPErrorSuccess,
+    
+    //get product error
+    EPErrorGetProductFailed,
+    
+    //purchase error
+    EPErrorCancelled,
+    EPErrorClientInvalid,
+    EPErrorPaymentInvalid,
+    EPErrorPaymentNotAllowed,
+    EPErrorProductNotAvailable,
+    EPErrorUnknown,
+    
+    //restore error
+    EPErrorRestoreError,
+    EPErrorRestoreGetEmptyArray,
+    
+    //check receipt error
+    EPErrorCheckReceiptFailed,
+    EPErrorRefreshReceiptFailed
+    
+    //other definition
+#if IAP_Check_DeadLock
+    , EPErrorQueueDeadLock
+#endif
+    
+#if IAP_Check_TransactionDeferred
+    , EPErrorTransactionDeferred
+#endif
+} EPError;
 
-// this device is not allowed to make the payment
-#define IAP_LOCALSTR_SKErrorPaymentNotAllowed           NSLocalizedString(@"IAP_LOCALSTR_SKErrorPaymentNotAllowed", @"")
+typedef enum : NSUInteger {
+    SKProductPaymentTypeNonConsumable,
+    SKProductPaymentTypeConsumable
+} SKProductPaymentType;
 
-// Product is not available in the current storefront
-#define IAP_LOCALSTR_SKErrorStoreProductNotAvailable    NSLocalizedString(@"IAP_LOCALSTR_SKErrorStoreProductNotAvailable", @"")
+#if DEBUG
 
-//get product failed
-#define IAP_LOCALSTR_GetProductFailed                   NSLocalizedString(@"IAP_LOCALSTR_GetProductFailed", @"")
+#define EPErrorName \
+@{ \
+@(EPErrorSuccess) : @"EPErrorSuccess", \
+@(EPErrorGetProductFailed): @"EPErrorGetProductFailed", \
+@(EPErrorCancelled): @"EPErrorCancelled", \
+@(EPErrorClientInvalid): @"EPErrorClientInvalid", \
+@(EPErrorPaymentInvalid): @"EPErrorPaymentInvalid", \
+@(EPErrorPaymentNotAllowed): @"EPErrorPaymentNotAllowed", \
+@(EPErrorProductNotAvailable): @"EPErrorProductNotAvailable", \
+@(EPErrorRestoreGetEmptyArray): @"EPErrorRestoreGetEmptyArray", \
+@(EPErrorCheckReceiptFailed): @"EPErrorCheckReceiptFailed" \
+}
 
-//check receipt failed
-#define IAP_LOCALSTR_CheckReceiptFailed                 NSLocalizedString(@"IAP_LOCALSTR_CheckReceiptFailed", @"")
+#endif
 
-//check receipt network failed
-#define IAP_LOCALSTR_CheckReceiptNetWorkFailed          NSLocalizedString(@"IAP_LOCALSTR_CheckReceiptNetWorkFailed", @"")
+typedef void(^EPProductInfoCompletionHandle)(NSArray *requestProductIds, NSArray *responseProducts);
 
-//inapppurchase dead lock
-#define IAP_LOCALSTR_InAppPurchaseDeadLock              NSLocalizedString(@"IAP_LOCALSTR_InAppPurchaseDeadLock", @"")
+typedef void(^EPPurchaseCompletionHandle)(NSString *productId, NSString *transactionId, EPError error);
 
-//restore success but get nothing restored
-#define IAP_LOCALSTR_RestoreGetEmptyArray               NSLocalizedString(@"IAP_LOCALSTR_RestoreGetEmptyArray", @"")
+typedef void(^EPRestoreCompletionHandle)(NSArray *restoredProducts, EPError error);
 
-typedef void(^EPProductInfoCompletionHandle)(NSArray *responseProducts);
+typedef void(^EPReceiptCheckerCompletionHandle)(NSArray *passedProducts, EPError error);
 
-typedef void(^EPPurchaseCompletionHandle)(NSString *productId, NSString *transactionId, NSString *errMsg);
-
-typedef void(^EPRestoreCompletionHandle)(NSArray *restoredProducts, NSString *errMsg);
-
-typedef void(^EPConsumableReceiptCheckerCompletionHandle)(NSString *productId, NSString *transactionId, NSString *errMsg);
+typedef void(^EPConsumableReceiptCheckerCompletionHandle)(NSString *productId, NSString *transactionId, EPError error);
 
 @interface EasyPurchase : NSObject
 
@@ -95,17 +125,16 @@ typedef void(^EPConsumableReceiptCheckerCompletionHandle)(NSString *productId, N
  */
 
 //single purchase
-+ (void)nonConsumablePurchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle;
-+ (void)nonConsumablePurchaseProductById:(NSString *)productId completion:(EPPurchaseCompletionHandle)completionHandle;
++ (void)purchase:(SKProduct *)product
+            type:(SKProductPaymentType)type
+      completion:(EPPurchaseCompletionHandle)completionHandle;
+
++ (void)purchaseProductById:(NSString *)productId
+                       type:(SKProductPaymentType)type
+                 completion:(EPPurchaseCompletionHandle)completionHandle;
 
 //restore
 + (void)restorePurchaseWithCompletion:(EPRestoreCompletionHandle)completionHandle;
-
-#pragma mark - Consumable
-//single purchase
-+ (void)consumablePurchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle;
-+ (void)consumablePurchaseProductById:(NSString *)productId completion:(EPPurchaseCompletionHandle)completionHandle;
-+ (void)checkReceiptForProduct:(NSString *)productId transaction:(NSString *)transactionId completion:(EPConsumableReceiptCheckerCompletionHandle)completionHandle;
 
 @end
 

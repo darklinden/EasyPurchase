@@ -13,7 +13,7 @@
 //ob should be Singleton, so you should not call functions at the same time
 @interface EPPurchaseObserver : NSObject
 
-+ (void)purchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle;
++ (void)purchase:(SKProduct *)product type:(SKProductPaymentType)type completion:(EPPurchaseCompletionHandle)completionHandle;
 
 + (void)restorePurchaseWithCompletion:(EPRestoreCompletionHandle)completionHandle;
 

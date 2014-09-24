@@ -9,25 +9,23 @@
 #import "EPPurchaseObserver.h"
 #import "ObjHolder.h"
 
-//NS_ENUM(u_int64_t, EPPurchaseType) {
-//    EPPurchaseTypePurchase,
-//    EPPurchaseTypeRestore
-//};
-
-typedef enum : NSUInteger {
-    EPPurchaseTypePurchase,
-    EPPurchaseTypeRestore
-} EPPurchaseType;
-
 @interface EPPurchaseObserver () <SKPaymentTransactionObserver>{
     EPPurchaseCompletionHandle  _purchaseCompletionHandle;
     EPRestoreCompletionHandle   _restoreCompletionHandle;
 }
-@property (nonatomic, strong) NSString          *ticket;
 
-@property (nonatomic, assign) EPPurchaseType    type;
-@property (nonatomic, strong) NSString          *purchaseProductId;
-@property (nonatomic, strong) NSMutableArray    *restoredProducts;
+
+typedef enum : NSUInteger {
+    EPObserverTypePurchase,
+    EPObserverTypeRestore
+} EPObserverType;
+
+@property (nonatomic, strong) NSString                  *ticket;
+
+@property (nonatomic, assign) EPObserverType            obType;
+@property (nonatomic, assign) SKProductPaymentType      payType;
+@property (nonatomic, strong) NSString                  *purchaseProductId;
+@property (nonatomic, strong) NSMutableArray            *restoredProducts;
 
 // Sent when the transaction array has changed (additions or state changes).  Client should check state of transactions and finish as appropriate.
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions;
@@ -47,23 +45,25 @@ typedef enum : NSUInteger {
 
 + (BOOL)hasDeadLock
 {
-#warning do this situation has any relationship with SKPaymentTransactionStateDeferred?
-    /*
-        any time when you start a purchase or restore, if there 's transaction in payment queue it may be a great chance to be a dead lock like "purchase has made but didn't download" and become "user canceled" 
-     */
+#if IAP_Check_DeadLock
+    //any time when you start a purchase or restore, if there's any transactions in payment queue there may be a great chance to be a dead lock like "purchase has made but didn't download" and cause "user canceled"
+    //this check may also cause dead lock if there already has
     return !![[[SKPaymentQueue defaultQueue] transactions] count];
+#else
+    return NO;
+#endif
 }
 
-+ (void)purchase:(SKProduct *)product completion:(EPPurchaseCompletionHandle)completionHandle
++ (void)purchase:(SKProduct *)product type:(SKProductPaymentType)type completion:(EPPurchaseCompletionHandle)completionHandle
 {
     if (![SKPaymentQueue canMakePayments]) {
         if (completionHandle) {
-            completionHandle(product.productIdentifier, nil, IAP_LOCALSTR_SKErrorPaymentNotAllowed);
+            completionHandle(product.productIdentifier, nil, EPErrorPaymentNotAllowed);
         }
     }
     else if ([self hasDeadLock]) {
         if (completionHandle) {
-            completionHandle(product.productIdentifier, nil, IAP_LOCALSTR_InAppPurchaseDeadLock);
+            completionHandle(product.productIdentifier, nil, EPErrorQueueDeadLock);
         }
     }
     else {
@@ -72,7 +72,8 @@ typedef enum : NSUInteger {
         
         //ob should be Singleton
         ob.ticket = [[ObjHolder sharedHolder] pushObject:ob];
-        ob.type = EPPurchaseTypePurchase;
+        ob.obType = EPObserverTypePurchase;
+        ob.payType = type;
         ob.purchaseProductId = product.productIdentifier;
         ob->_purchaseCompletionHandle = completionHandle;
         
@@ -86,7 +87,7 @@ typedef enum : NSUInteger {
 {
     if ([self hasDeadLock]) {
         if (completionHandle) {
-            completionHandle(nil, IAP_LOCALSTR_InAppPurchaseDeadLock);
+            completionHandle(nil, EPErrorQueueDeadLock);
         }
     }
     else {
@@ -95,7 +96,7 @@ typedef enum : NSUInteger {
         
         //ob should be Singleton
         ob.ticket = [[ObjHolder sharedHolder] pushObject:ob];
-        ob.type = EPPurchaseTypeRestore;
+        ob.obType = EPObserverTypeRestore;
         ob.restoredProducts = [NSMutableArray array];
         ob->_restoreCompletionHandle = completionHandle;
         
@@ -109,24 +110,26 @@ typedef enum : NSUInteger {
     [[ObjHolder sharedHolder] popObjectWithTicket:_ticket];
 }
 
-- (void)doFinishTransaction:(SKPaymentTransaction *)transaction error:(NSString *)errMsg
+- (void)doFinishTransaction:(SKPaymentTransaction *)transaction error:(EPError)err
 {
     if (transaction.transactionState == SKPaymentTransactionStatePurchased
         || transaction.transactionState == SKPaymentTransactionStateRestored) {
         IAP_OBSERVER_LOG(@"transaction id: %@, original transaction id: %@", transaction.transactionIdentifier, transaction.originalTransaction.transactionIdentifier);    
     }
     
-    switch (_type) {
-        case EPPurchaseTypePurchase:
+    switch (_obType) {
+        case EPObserverTypePurchase:
         {
             if ([transaction.payment.productIdentifier isEqualToString:_purchaseProductId]) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     if (_purchaseCompletionHandle) {
                         if (transaction.originalTransaction) {
-                            _purchaseCompletionHandle(transaction.payment.productIdentifier, transaction.originalTransaction.transactionIdentifier, errMsg);
+                            _purchaseCompletionHandle(transaction.payment.productIdentifier,
+                                                      transaction.originalTransaction.transactionIdentifier,
+                                                      err);
                         }
                         else {
-                            _purchaseCompletionHandle(transaction.payment.productIdentifier, transaction.transactionIdentifier, errMsg);
+                            _purchaseCompletionHandle(transaction.payment.productIdentifier, transaction.transactionIdentifier, err);
                         }
                     }
                     
@@ -140,9 +143,9 @@ typedef enum : NSUInteger {
             }
         }
             break;
-        case EPPurchaseTypeRestore:
+        case EPObserverTypeRestore:
         {
-            if (!errMsg) {
+            if (EPErrorSuccess == err) {
                 if (transaction.originalTransaction) {
                     NSDictionary *dict = @{@"product_id": transaction.payment.productIdentifier,
                                            @"transaction_id": transaction.originalTransaction.transactionIdentifier};
@@ -167,9 +170,12 @@ typedef enum : NSUInteger {
                 
             case SKPaymentTransactionStateDeferred:
             {
-                // The transaction is in the queue, but its final status is pending external action.
-#warning may need to deal as usercaneled to wait for the transaction finished or hang on as SKPaymentTransactionStatePurchasing
-#warning TODO: rewrite logic after ios8 released
+                if (_obType == EPObserverTypePurchase && _payType == SKProductPaymentTypeNonConsumable) {
+#if IAP_Check_TransactionDeferred
+                    //if non-consumable purchase, deal as user cancelled and
+                    [self doFinishTransaction:transaction error:EPErrorTransactionDeferred];
+#endif
+                }
                 IAP_OBSERVER_LOG(@"\n");
                 IAP_OBSERVER_LOG(@"productIdentifier %@", transaction.payment.productIdentifier);
                 IAP_OBSERVER_LOG(@"SKPaymentTransactionStateDeferred");
@@ -193,7 +199,7 @@ typedef enum : NSUInteger {
                 IAP_OBSERVER_LOG(@"SKPaymentTransactionStatePurchased");
                 
                 //check if the payment is OK
-                [self doFinishTransaction:transaction error:nil];
+                [self doFinishTransaction:transaction error:EPErrorSuccess];
                 
 				break;
             }
@@ -206,7 +212,7 @@ typedef enum : NSUInteger {
                 IAP_OBSERVER_LOG(@"SKPaymentTransactionStateRestored");
 				
                 //check if the payment is OK
-                [self doFinishTransaction:transaction error:nil];
+                [self doFinishTransaction:transaction error:EPErrorSuccess];
                 
 				break;
             }
@@ -218,49 +224,49 @@ typedef enum : NSUInteger {
                 IAP_OBSERVER_LOG(@"productIdentifier %@", transaction.payment.productIdentifier);
 				IAP_OBSERVER_LOG(@"SKPaymentTransactionStateFailed");
                 
-                NSString *errMsg = nil;
+                EPError err = EPErrorSuccess;
                 
                 switch (transaction.error.code) {
                         
                     case SKErrorPaymentCancelled:
                     {
                         // user cancelled the request, etc.
-                        errMsg = IAP_LOCALSTR_SKErrorPaymentCancelled;
+                        err = EPErrorCancelled;
                         break;
                     }
                         
                     case SKErrorUnknown:
                     {
                         // A transaction error occurred, so notify user.
-                        errMsg = IAP_LOCALSTR_SKErrorUnknown;
+                        err = EPErrorUnknown;
                         break;
                     }
                         
                     case SKErrorClientInvalid:
                     {
                         // client is not allowed to issue the request, etc.
-                        errMsg = IAP_LOCALSTR_SKErrorClientInvalid;
+                        err = EPErrorClientInvalid;
                         break;
                     }
                         
                     case SKErrorPaymentInvalid:
                     {
                         // purchase identifier was invalid, etc.
-                        errMsg = IAP_LOCALSTR_SKErrorPaymentInvalid;
+                        err = EPErrorPaymentInvalid;
                         break;
                     }
                         
                     case SKErrorPaymentNotAllowed:
                     {
                         // this device is not allowed to make the payment
-                        errMsg = IAP_LOCALSTR_SKErrorPaymentNotAllowed;
+                        err = EPErrorPaymentNotAllowed;
                         break;
                     }
                         
                     case SKErrorStoreProductNotAvailable:
                     {
                         // Product is not available in the current storefront
-                        errMsg = IAP_LOCALSTR_SKErrorStoreProductNotAvailable;
+                        err = EPErrorProductNotAvailable;
                         break;
                     }
                         
@@ -268,7 +274,7 @@ typedef enum : NSUInteger {
                         break;
                 }
                 
-                [self doFinishTransaction:transaction error:errMsg];
+                [self doFinishTransaction:transaction error:err];
                 
 				break;
             }
@@ -290,10 +296,10 @@ typedef enum : NSUInteger {
 {
     IAP_OBSERVER_LOG(@"restoreCompletedTransactionsFailedWithError: %@", error);
     
-    if (_type == EPPurchaseTypeRestore) {
+    if (_obType == EPObserverTypeRestore) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_restoreCompletionHandle) {
-                _restoreCompletionHandle([_restoredProducts copy], [error.localizedDescription copy]);
+                _restoreCompletionHandle([_restoredProducts copy], EPErrorRestoreError);
             }
             
             [self clean];
@@ -307,10 +313,10 @@ typedef enum : NSUInteger {
 {
     IAP_OBSERVER_LOG(@"paymentQueueRestoreCompletedTransactionsFinished");
     
-    if (_type == EPPurchaseTypeRestore) {
+    if (_obType == EPObserverTypeRestore) {
         dispatch_async(dispatch_get_main_queue(), ^{
             if (_restoreCompletionHandle) {
-                _restoreCompletionHandle([_restoredProducts copy], nil);
+                _restoreCompletionHandle([_restoredProducts copy], EPErrorSuccess);
             }
             
             [self clean];

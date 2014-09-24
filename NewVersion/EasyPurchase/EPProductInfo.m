@@ -51,7 +51,7 @@
 {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (_completionHandle) {
-            _completionHandle([self.responseProducts copy]);
+            _completionHandle([self.requestProductIds copy], [self.responseProducts copy]);
         }
         
         [[ObjHolder sharedHolder] popObjectWithTicket:_ticket];
