@@ -54,6 +54,9 @@
                      refreshable:(BOOL)refreshable
                       completion:(EPReceiptCheckerCompletionHandle)completionHandle
 {
+    NSAssert([bundleId isEqualToString:[[NSBundle mainBundle] bundleIdentifier]], @"bundle id not equal");
+    NSAssert([version isEqualToString:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"]], @"version not equal");
+    
     EPReceiptChecker *checker = [[EPReceiptChecker alloc] init];
     checker.ticket = [[ObjHolder sharedHolder] pushObject:checker];
     checker.srcBundleId = (NSString *)bundleId;
