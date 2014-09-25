@@ -13,13 +13,26 @@
 #error This lib is for iOS 7.0 and later
 #endif
 
+//copied from VerifyStoreReceipt
+#ifndef YES_I_HAVE_READ_THE_WARNING_AND_I_ACCEPT_THE_RISK
+
+#warning --- DON'T USE THIS CODE AS IS! IF EVERYONE USES THE SAME CODE
+#warning --- IT IS PRETTY EASY TO BUILD AN AUTOMATIC CRACKING TOOL
+#warning --- FOR APPS USING THIS CODE!
+#warning --- BY USING THIS CODE YOU ACCEPT TAKING THE RESPONSIBILITY FOR
+#warning --- ANY DAMAGE!
+#warning ---
+#warning --- YOU HAVE BEEN WARNED!
+
+#endif
+
 extern NSString const *bundleVersion;
 extern NSString const *bundleIdentifier;
 
 #define IAP_SECURE_VALUE_COUNT_KEY          @"IAP_SECURE_VALUE_COUNT_KEY"
 #define IAP_SECURE_VALUE_KEY_FORMAT         @"IAP_SECURE_VALUE_KEY_%lld"
 
-#if 1
+#if DEBUG
 
 #define IAP_OBSERVER_LOG( ... )             NSLog(@"IAP_OBSERVER: %@", [NSString stringWithFormat:__VA_ARGS__])
 #define IAP_PRODUCT_LOG( ... )              NSLog(@"IAP_PRODUCT:%@", [NSString stringWithFormat:__VA_ARGS__])
@@ -28,15 +41,18 @@ extern NSString const *bundleIdentifier;
 
 #else
 
-#define IAP_OBSERVER_LOG( s, ... )          do {} while (0)
-#define IAP_PRODUCT_LOG( s, ... )           do {} while (0)
-#define IAP_CHECK_LOG( s, ... )             do {} while (0)
-#define IAP_CONTROLLER_LOG( s, ... )        do {} while (0)
+#define IAP_OBSERVER_LOG( ... )             do {} while (0)
+#define IAP_PRODUCT_LOG( ... )              do {} while (0)
+#define IAP_CHECK_LOG( ... )                do {} while (0)
+#define IAP_CONTROLLER_LOG( ... )           do {} while (0)
 
 #endif
 
 //if IAP_Check_DeadLock is setted to TRUE, the purchase will return an "EPErrorQueueDeadLock" error if there's any unfinished payment in queue
-#define IAP_Check_DeadLock TRUE
+//for Non-Consumable purchase it recommended to restart the device, but I have no idea for consumable purchase.
+//It is not a good idea to stop purchase in this case
+//TODO: an solution for deadlock payment in queue
+#define IAP_Check_DeadLock FALSE
 
 //if IAP_Check_TransactionDeferred is setted to TRUE, the purchase will return an "EPErrorTransactionDeferred" error if an Non-Consumable purchase suffered the SKPaymentTransactionStateDeferred state
 #define IAP_Check_TransactionDeferred TRUE
@@ -62,16 +78,11 @@ typedef enum : NSUInteger {
     
     //check receipt error
     EPErrorCheckReceiptFailed,
-    EPErrorRefreshReceiptFailed
+    EPErrorRefreshReceiptFailed,
     
     //other definition
-#if IAP_Check_DeadLock
-    , EPErrorQueueDeadLock
-#endif
-    
-#if IAP_Check_TransactionDeferred
-    , EPErrorTransactionDeferred
-#endif
+    EPErrorQueueDeadLock,
+    EPErrorTransactionDeferred
 } EPError;
 
 typedef enum : NSUInteger {
@@ -91,7 +102,9 @@ typedef enum : NSUInteger {
 @(EPErrorPaymentNotAllowed): @"EPErrorPaymentNotAllowed", \
 @(EPErrorProductNotAvailable): @"EPErrorProductNotAvailable", \
 @(EPErrorRestoreGetEmptyArray): @"EPErrorRestoreGetEmptyArray", \
-@(EPErrorCheckReceiptFailed): @"EPErrorCheckReceiptFailed" \
+@(EPErrorCheckReceiptFailed): @"EPErrorCheckReceiptFailed", \
+@(EPErrorQueueDeadLock): @"EPErrorQueueDeadLock", \
+@(EPErrorTransactionDeferred): @"EPErrorTransactionDeferred" \
 }
 
 #endif
@@ -113,7 +126,7 @@ typedef void(^EPConsumableReceiptCheckerCompletionHandle)(NSString *productId, N
 //request products informations
 + (void)requestProductsByIds:(NSArray *)productIds completion:(EPProductInfoCompletionHandle)completionHandle;
 
-#pragma mark - Non-Consumable
+#pragma mark - Purchase
 
 //keychain save/load purchase state
 + (BOOL)isPurchased:(NSString *)productId;
@@ -132,6 +145,8 @@ typedef void(^EPConsumableReceiptCheckerCompletionHandle)(NSString *productId, N
 + (void)purchaseProductById:(NSString *)productId
                        type:(SKProductPaymentType)type
                  completion:(EPPurchaseCompletionHandle)completionHandle;
+
+#pragma mark - Restore
 
 //restore
 + (void)restorePurchaseWithCompletion:(EPRestoreCompletionHandle)completionHandle;

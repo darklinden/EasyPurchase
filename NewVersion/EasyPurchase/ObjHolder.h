@@ -18,4 +18,6 @@
 //release object with ticket
 - (void)popObjectWithTicket:(NSString *)ticket;
 
++ (void)check_memory;
+
 @end

@@ -10,6 +10,7 @@
 #import "ViewController.h"
 #import "VC_selectProduct.h"
 #import "V_loading.h"
+#import "ObjHolder.h"
 
 @interface ViewController ()
 @property (strong, nonatomic) IBOutlet UIButton     *pBtn_selectProduct;
@@ -55,7 +56,7 @@
 {
     if (self.selectedProduct) {
         
-        [V_loading showLoadingView:self.navigationController.view title:nil message:@"Non-Consumable Purchasing"];
+        [V_loading showLoadingView:self.navigationController.view title:nil message:@"Purchasing"];
         [EasyPurchase purchase:self.selectedProduct type:_selectedProductType completion:^(NSString *productId, NSString *transactionId, EPError error) {
             
             [V_loading removeLoading];
@@ -63,7 +64,11 @@
             NSString *message = nil;
             
             if (EPErrorSuccess == error) {
-                [EasyPurchase savePurchase:productId];
+                
+                if (SKProductPaymentTypeNonConsumable == _selectedProductType) {
+                    [EasyPurchase savePurchase:productId];
+                }
+                
                 message = [NSString stringWithFormat:@"product %@ purchase success", productId];
             }
             else {
@@ -127,6 +132,12 @@
 
 - (IBAction)pBtn_checkClick:(id)sender
 {
+    if (!_selectedProduct) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:@"No product is selected to check!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
+        return;
+    }
+    
     if (self.selectedProductType == SKProductPaymentTypeConsumable) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Info" message:@"Consumable purchase is not able to check!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alert show];
@@ -170,6 +181,11 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
+    
+}
+
+- (IBAction)pBtn_mem_check_clicked:(id)sender {
+    [ObjHolder check_memory];
     
 }
 

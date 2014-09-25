@@ -16,14 +16,11 @@ const NSString *bundleIdentifier = @"darklinden.purchasetest";
 
 @implementation EasyPurchase
 
-#pragma mark - product info
 //request products informations
 + (void)requestProductsByIds:(NSArray *)productIds completion:(EPProductInfoCompletionHandle)completionHandle
 {
     [EPProductInfo requestProductsByIds:productIds completion:completionHandle];
 }
-
-#pragma mark - Non-Consumable
 
 + (NSString *)getSecureValueForKey:(NSString *)key
 {
@@ -174,11 +171,9 @@ const NSString *bundleIdentifier = @"darklinden.purchasetest";
                 }
                 else {
                     BOOL match = NO;
-                    for (NSDictionary *dict in passedProducts) {
-                        NSString *pid = dict[@"product_id"];
-                        NSString *tid = dict[@"transaction_id"];
-                        
-                        if ([productId isEqualToString:pid] && [transactionId isEqualToString:tid]) {
+                    for (EPTransactionProduct *pro in passedProducts) {
+                        if (([productId isEqualToString:pro.product_id] && [transactionId isEqualToString:pro.transaction_id])
+                            || ([productId isEqualToString:pro.product_id] && [transactionId isEqualToString:pro.original_transaction_id])) {
                             match = YES;
                             break;
                         }
@@ -187,7 +182,7 @@ const NSString *bundleIdentifier = @"darklinden.purchasetest";
                     if (match) {
                         dispatch_async(dispatch_get_main_queue(), ^{
                             if (completionHandle) {
-                                completionHandle(productId, transactionId, error);
+                                completionHandle(productId, transactionId, EPErrorSuccess);
                             }
                         });
                     }
@@ -257,17 +252,12 @@ const NSString *bundleIdentifier = @"darklinden.purchasetest";
                     
                     NSMutableArray *result = [NSMutableArray array];
                     for (NSDictionary *dr in restoredProducts) {
-                        for (NSDictionary *dp in passedProducts) {
-                            NSString *rpid = dr[@"product_id"];
-                            NSString *rtid = dr[@"transaction_id"];
-                            
-                            NSString *ppid = dp[@"product_id"];
-                            NSString *ptid = dp[@"transaction_id"];
-                            
-                            if ([rpid isEqualToString:ppid] && [rtid isEqualToString:ptid]) {
-//                                NSDictionary *dict = @{@"product_id": ppid,
-//                                                       @"transaction_id": ptid};
-                                [result addObject:ppid];
+                        NSString *rpid = dr[@"product_id"];
+                        NSString *rtid = dr[@"transaction_id"];
+                        for (EPTransactionProduct *p in passedProducts) {
+                            if (([rpid isEqualToString:p.product_id] && [rtid isEqualToString:p.transaction_id])
+                                || ([rpid isEqualToString:p.product_id] && [rtid isEqualToString:p.original_transaction_id])) {
+                                [result addObject:rpid];
                             }
                         }
                     }
