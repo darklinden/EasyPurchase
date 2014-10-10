@@ -147,6 +147,19 @@ const NSString *bundleIdentifier = @"darklinden.purchasetest";
     }
 }
 
++ (void)removeAllPurchase
+{
+    NSString *pStr_count = [self getSecureValueForKey:IAP_SECURE_VALUE_COUNT_KEY];
+    int64_t intKeyCount = [pStr_count integerValue];
+    if (intKeyCount > 0) {
+        for (int64_t i = 0; i < intKeyCount; i++) {
+            NSString *pStr_key = [NSString stringWithFormat:IAP_SECURE_VALUE_KEY_FORMAT, i];
+            [self storeSecureValue:nil forKey:pStr_key];
+        }
+        [self storeSecureValue:[NSString stringWithFormat:@"%lld", intKeyCount] forKey:IAP_SECURE_VALUE_COUNT_KEY];
+    }
+}
+
 //single purchase
 + (void)purchase:(SKProduct *)product type:(SKProductPaymentType)type completion:(EPPurchaseCompletionHandle)completionHandle
 {

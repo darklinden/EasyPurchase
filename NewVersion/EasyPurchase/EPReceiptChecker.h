@@ -30,6 +30,9 @@
 //receipt field
 //https://developer.apple.com/library/ios/releasenotes/General/ValidateAppStoreReceipt/Chapters/ReceiptFields.html#//apple_ref/doc/uid/TP40010573-CH106-SW1
 
+//https://developer.apple.com/library/ios/releasenotes/General/ValidateAppStoreReceipt/Chapters/ReceiptFields.html#//apple_ref/doc/uid/TP40010573-CH106-SW2
+
+
 //https://developer.apple.com/videos/wwdc/2014/
 /*
  "Preventing Unauthorized Purchases with Receipts"

@@ -131,6 +131,7 @@ typedef void(^EPConsumableReceiptCheckerCompletionHandle)(NSString *productId, N
 //keychain save/load purchase state
 + (BOOL)isPurchased:(NSString *)productId;
 + (void)savePurchase:(NSString *)productId;
++ (void)removeAllPurchase;
 
 /*
  * warning: Purchase Observer should be Singleton, 
